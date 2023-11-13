@@ -1,0 +1,10 @@
+{
+    "r.rterm.linux": "env/bin/R",
+    "r.libPaths": [
+        "/home/jovyan/BCB410H/PhenoGenRLib/env/lib/R/library/"
+    ],
+    "r.rpath.linux": "env/bin/R",
+    "cSpell.words": [
+        "gmap"
+    ]
+}
