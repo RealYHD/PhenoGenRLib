@@ -26,13 +26,22 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
     return(variantData)
 }
 
-mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38) {
+mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
     nvCoords <- coordinatesFromVariants(variants = variants, offset = offset)
     mappingData <- variants
     mappingData["chrom_start"] <- nvCoords$POS
     mappingData["chrom_end"] <- nvCoords$END
-    rsids <- mapRsidsForVariantPositions(coordinates = nvCoords, hostGenVersion = hostGenVersion)
-    # TODO break up request into multiple small ones due to timeout for large calls
+
+    batchIndex <- 1
+    rsids <- NULL
+    while(batchIndex <= nrow(nvCoords)) {
+        endIndex <- min(batchIndex + batchSize - 1, nrow(nvCoords))
+        nvCoordBatch <- nvCoords[batchIndex:endIndex,]
+        rsidBatch <- mapRsidsForVariantPositions(coordinates = nvCoordBatch, hostGenVersion = hostGenVersion)
+        rsids <- if (base::is.null(rsids)) rsidBatch else base::rbind(rsids, rsidBatch)
+        batchIndex <- endIndex + 1
+    }
+
     mappedVariants <- base::merge(mappingData, rsids[c("chrom_start", "chrom_end", "refsnp_id")], by = c("chrom_start", "chrom_end"), all.x = TRUE)
     return(c(mappedVariants, rsids))
 }
