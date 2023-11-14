@@ -22,4 +22,4 @@ variantDistributionEnsembl <- function(variants) {
         geom_point(size = 2, colour = "red") +
         labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
         theme(aspect.ratio = 1/2)
-
+}
