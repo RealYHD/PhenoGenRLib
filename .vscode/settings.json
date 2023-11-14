@@ -5,6 +5,17 @@
     ],
     "r.rpath.linux": "env/bin/R",
     "cSpell.words": [
-        "gmap"
+        "bedr",
+        "biomart",
+        "chrom",
+        "Ensembl",
+        "Freqs",
+        "gmap",
+        "refsnp",
+        "rentrez",
+        "rsid",
+        "Rsids",
+        "stringr",
+        "vcfs"
     ]
 }
