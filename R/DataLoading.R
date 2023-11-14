@@ -25,12 +25,13 @@ library(biomaRt)
 #' @return Returns a data.frame like object where each row is a variant and
 #' the associated metadata is attached column-wise to the right. 
 #' 
+#' @export 
 linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
     metadata <- readr::read_csv(metadataFile)
     variantData <- NULL
     for(i in 1:nrow(metadata)) {
         metadataRow <- metadata[i,]
-        vcfFile <- normalizePath(file.path(vcfDir, metadataRow[vcfColName]))
+        vcfFile <- base::normalizePath(base::file.path(vcfDir, metadataRow[vcfColName]))
         vcfs <- bedr::read.vcf(vcfFile, split.info= TRUE, split.samples = TRUE)
         header <- vcfs[[1]]
         vcfs <- vcfs[2:length(vcfs)]
@@ -74,6 +75,8 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
 #' other built-in VCF annotations), as well as the associated rsIDs, chromosomal and known chromosomal
 #' start and end positions. Also returns a data.frame of all the rsIDs and associated information such
 #' allele frequencies in the databases.
+#' 
+#' @export 
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
     nvCoords <- coordinatesFromVariants(variants = variants, offset = offset)
     mappingData <- variants

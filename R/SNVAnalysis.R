@@ -23,6 +23,7 @@ library(tibble)
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
 #' employed for each test.
 #' 
+#' @export 
 varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, useChi = FALSE) {
     phenotypes <- base::unique(variants[[phenotypeName]])
     uniqueRsids <- base::unique(variants[["refsnp_id"]])
@@ -86,6 +87,7 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
 #' employed for each test.
 #'  
+#' @export 
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
     rsidsWithFreq <- rsids[!base::is.na(rsids["minor_allele_count"]),]
     uniqueRsids <- base::intersect(base::unique(variants[["refsnp_id"]]), base::unique(rsidsWithFreq[["refsnp_id"]]))

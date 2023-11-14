@@ -12,6 +12,7 @@ library(ggplot2)
 #' @param variants The data.frame containing all the variant
 #' information.
 #' 
+#' @export 
 visVariantDistribution <- function(variants) {
     greatestNVPos <- base::max(
         variants$POS + base::apply(variants["REF"], MARGIN = 1, base::nchar)

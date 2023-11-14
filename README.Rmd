@@ -18,37 +18,32 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of PhenoGenRLib is to ...
+The goal of PhenoGenRLib is to simplify nucleotide variant analysis.
+
+As next generational sequencing (NGS) begins taking off, more and more data is readily available to be used. Arguably, there is an overabundance of data that has yet been used to it's fullest potential. PhenoGenRLib promises to provide simple ways of loading VCFs, associating them with sample metadata, and lastly, running associative studies by applying the metadata.
 
 ## Installation
 
 You can install the development version of PhenoGenRLib like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+require("devtools")
+devtools::install github("RealYHD/PhenoGenRLib",
+build vignettes = TRUE)
+library("PhenoGenRLib")
 ```
 
-## Example
+## Getting Started
 
-This is a basic example which shows you how to solve a common problem:
+To get started, have a datasheet ready in the form of a `CSV`. This datasheet should at the very least, contain one column, where each row in that column contains the filename of the VCF including the `.vcf`. For the following example, we will assume that such a file is called `huntingtons_datasheet_shortened.csv` and is located at `./inst/extdata/huntingtons_datasheet_shortened.csv` with the column containing the VCF filenames being named `vcfs`. We will also need the location of the VCFs. Let's assume they can be found at the same place as the metadata CSV `./inst/extdata/`. Then:
 
 ```{r example}
 library(PhenoGenRLib)
-## basic example code
+PhenoGenRLib::linkVariantsWithMetadata(
+  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
+  vcfDir = "inst/extdata/",
+  vcfColName = "vcfs"
+)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+Checkout the documents and vignettes for where to go from here!
