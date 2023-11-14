@@ -1,6 +1,18 @@
 library(ggplot2)
 
-variantDistributionEnsembl <- function(variants) {
+
+#' Visualize Variant Distribution
+#' 
+#' Sometimes, it may be beneficial to know approximately which
+#' genomic regions have the most detected variants relative to 
+#' reference sequence. This function generates a simple figure
+#' depicting the positions on the horizontal axis and the number 
+#' of variants on the vertical axis.
+#' 
+#' @param variants The data.frame containing all the variant
+#' information.
+#' 
+visVariantDistribution <- function(variants) {
     greatestNVPos <- base::max(
         variants$POS + base::apply(variants["REF"], MARGIN = 1, base::nchar)
     )
@@ -17,9 +29,11 @@ variantDistributionEnsembl <- function(variants) {
     positions <- smallestNVPos:(greatestNVPos - 1)
     distribution <- base::data.frame(positions, caseOccurrences)
     
-    ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
+    ggplot2::ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
         geom_bar(stat = "identity", fill = "red", width = 1) +
         geom_point(size = 2, colour = "red") +
         labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
         theme(aspect.ratio = 1/2)
+    
+    return(NULL)
 }

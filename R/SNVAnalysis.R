@@ -1,6 +1,28 @@
 library(stringr)
 library(tibble)
 
+#' Variance Case-Control Analysis where the Case and Control are User Provided
+#' 
+#' Similar to varianceCCAnalysisEnsembl, however, instead of using Ensembl,
+#' the name of a column from the metadata used to load the VCFs is taken.
+#' The function then finds all possible categorical values for the column
+#' and builts pairwise tables based off these.
+#' 
+#' @param variants The data.frame containing the variant information.
+#' @param totalCaseSamples The total number of case samples that goes into
+#' the variants data.frame. In other words, this should equal the number of rows
+#' found in the metadata file used to load the VCFs as each row in that file
+#' should represent one case.
+#' @param phenotypeName The name of the phenotype to categorize upon. E.g., if
+#' each VCF had trinary column named "Type" and the values in the column are of
+#' A, B, or C, then the categorical values this function would discover are A,
+#' B, and C and therefore, would require the breaking down of the tables pairwise.
+#' @param useChi Instead of using Fisher's exact test, the chi-square test will be employed.
+#' Default is FALSE.
+#' 
+#' @return A data.frame containing all the p-values and the shape of the 2-way table
+#' employed for each test.
+#' 
 varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, useChi = FALSE) {
     phenotypes <- base::unique(variants[[phenotypeName]])
     uniqueRsids <- base::unique(variants[["refsnp_id"]])
@@ -38,6 +60,32 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
     results <- if (base::is.nan(results)) result else base::rbind(results, result)
 }
 
+
+#' Variance Case-Control Analysis where the Ensembl Database is the Control
+#' 
+#' This function makes it easy to test for potential associations between the
+#' studied case, and the average population. To elaborate, this function takes
+#' a data.frame of all the variants, and the rsIDs found to be linked with said
+#' variants, and uses the pre-existing allele frequency information from the rsID
+#' data.frame (fetched from Ensembl). Then, it moves over each mutation with population
+#' information in public databases and runs a Fisher's exact test. The Fisher's exact
+#' test is beneficial for low sample counts as it is an exact measure of correlation in
+#' contrast to various other tests. It is more computational intensive however. Hence,
+#' this function also allows the use of the chi-square test. The table formed is between
+#' whether or not the position is mutated, and whether or not the mutation occurred in a
+#' healthy individual (the control group), or the case study individual.
+#' 
+#' @param variants The data.frame containing all the variants, variant information, and rsIDs.
+#' @param rsids The data.frame containing all the extra information regarding the known
+#' variants.
+#' @param totalCaseSamples The total number of case samples. This should be the number of rows
+#' in the metadata file as each row represents one case, hence, one VCF.
+#' @param useChi Instead of using Fisher's exact test, the chi-square test will be employed.
+#' Default is FALSE.
+#' 
+#' @return A data.frame containing all the p-values and the shape of the 2-way table
+#' employed for each test.
+#'  
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
     rsidsWithFreq <- rsids[!base::is.na(rsids["minor_allele_count"]),]
     uniqueRsids <- base::intersect(base::unique(variants[["refsnp_id"]]), base::unique(rsidsWithFreq[["refsnp_id"]]))
