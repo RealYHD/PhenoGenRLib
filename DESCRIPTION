@@ -18,3 +18,7 @@ Imports:
     stringr (>= 1.5.0),
     tibble (>= 3.2.1),
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

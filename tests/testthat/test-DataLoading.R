@@ -19,12 +19,12 @@ test_that("loaded VCFs have correct data in metadata columns", {
 })
 
 test_that("rsid mappings return two distinct values", {
-  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosomes", variants = UnmappedVariants, offset = 3074680)
+  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosome", variants = UnmappedVariants, offset = 3074680)
   expect_length(mapped, 2)
 })
 
 test_that("rsid mappings result in correct data columns", {
-  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosomes", variants = UnmappedVariants, offset = 3074680)
+  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosome", variants = UnmappedVariants, offset = 3074680)
   mappedNvs <- mapped$nvs
   rsids <- mapped$rsids
 
@@ -47,7 +47,7 @@ test_that("rsid mappings result in correct data columns", {
 })
 
 test_that("rsid mappings have at least 1 mapping", {
-  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosomes", variants = UnmappedVariants, offset = 3074680)
+  mapped <- PhenoGenRLib::mapRsidsForVariants("chromosome", variants = UnmappedVariants, offset = 3074680)
   mappedNvs <- mapped$nvs
   expect_gte(length(mappedNvs[which(!is.na(mappedNvs$refsnp_id)),]), 1)
 })

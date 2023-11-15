@@ -1,0 +1,57 @@
+---
+title: "Perform-Case-Control-Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Perform-Case-Control-Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(PhenoGenRLib)
+```
+
+# Case Control Analysis by Using Ensembl as A Control
+
+1. We will begin by loading the dataset built-in to this package installation.
+
+```{r load}
+nvs <- PhenoGenRLib::linkVariantsWithMetadata(
+  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
+  vcfDir = "inst/extdata/",
+  vcfColName = "vcfs"
+)
+
+# Take a look by using View(nvs)!
+```
+
+2. This may be useful to use by itself it we were analyzing some specific phenotype we already annotated in the metadata, but for now, we're going to need to extend our dataset by fetching from the Ensembl database. To do this, we'll need rsIDs for as many of our variants as possible. Thus:
+
+```{r annotate}
+mappings <- PhenoGenRLib::mapRsidsForVariants(
+  "chromosome",
+  variants = nvs,
+  offset = 3074680
+)
+```
+
+Few things to note: We passed in the string `chromosome` to tell the function where to find the chromosome identity to match in the Ensembl database. Furthermore, we passed in a offset because the VCFs were generated using a reference sequence that did not take up the entire chromosome, rather, just a specific gene. We therefore need to offset all VCF positions to translate to chromosomal positions.
+
+Perfect.
+
+3. Lastly, let's assume that the VCFs were generated from patients with disease X. We want to know if any of the nucleotide variations are associated statistically with disease X. To do this, we'll compare the frequency of mutations from our hypothetically sick patients, to those that are healthy (Ensembl database).
+
+```{r analysis, eval=FALSE}
+analysis <- PhenoGenRLib::varianceCCAnalysisEnsembl(
+  nvs,
+  mappings$rsids,
+  totalCaseSamples = 8
+)
+```

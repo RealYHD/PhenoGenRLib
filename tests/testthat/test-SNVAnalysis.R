@@ -6,4 +6,6 @@ test_that("case control with ensembl database as control produces expected table
     RsIDs,
     totalCaseSamples = 8
   )
+
+  expect_type(results, data.frame)
 })

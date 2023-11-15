@@ -39,7 +39,7 @@ To get started, have a datasheet ready in the form of a `CSV`. This datasheet sh
 
 ```{r example}
 library(PhenoGenRLib)
-PhenoGenRLib::linkVariantsWithMetadata(
+variants <- PhenoGenRLib::linkVariantsWithMetadata(
   metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
   vcfDir = "inst/extdata/",
   vcfColName = "vcfs"

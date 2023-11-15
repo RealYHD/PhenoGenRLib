@@ -79,7 +79,11 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
 #' 
 #' @export 
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
-    nvCoords <- coordinatesFromVariants(variants = variants, offset = offset)
+    nvCoords <- coordinatesFromVariants(
+        variants = variants,
+        chromCol = chromCol,
+        offset = offset
+    )
     mappingData <- variants
     mappingData["chrom_start"] <- nvCoords$POS
     mappingData["chrom_end"] <- nvCoords$END
@@ -95,10 +99,10 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
     }
 
     mappedVariants <- base::merge(mappingData, rsids[c("chrom_start", "chrom_end", "refsnp_id")], by = c("chrom_start", "chrom_end"), all.x = TRUE)
-    return(base::data.frame(nvs = mappedVariants, rsids = rsids))
+    return(base::list(nvs = mappedVariants, rsids = rsids))
 }
 
-coordinatesFromVariants <- function(variants, offset = 0) {
+coordinatesFromVariants <- function(variants, chromCol, offset = 0) {
     queryData <- variants[c(chromCol, "POS")]
     queryData$POS <- queryData$POS + offset
     queryData["END"] <- queryData$POS + apply(variants["REF"], MARGIN = 1, nchar) - 1

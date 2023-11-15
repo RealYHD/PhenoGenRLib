@@ -110,7 +110,7 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
         specificRsidStats <- rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]
         totalControlSamples <- base::ceiling(specificRsidStats$minor_allele_count / specificRsidStats$minor_allele_freq)
         controlFreqs <- base::lapply(allAlleles, function(x) {
-            if (x == specificRsidStats[["minor_allele"]][1]) {
+            if (length(specificRsidStats[["minor_allele"]]) == 1 && x == specificRsidStats[["minor_allele"]]) {
                 return(specificRsidStats[["minor_allele_count"]])
             } else {
                 return(totalControlSamples - specificRsidStats[["minor_allele_count"]])
@@ -181,7 +181,7 @@ multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = NULL)
         )
         results <- (if (base::is.null(results)) result else rbind(results, result))
     }
-    if (nrow(results) > 1) {
+    if (!base::is.null(results) && nrow(results) > 1) {
         base::colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
         base::row.names(results) <- NULL
     }

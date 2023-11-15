@@ -35,7 +35,8 @@ may reduce chances of timing out. Default is 100.}
 Returns variant data.frame containing all pre-existing information (including metadata and
 other built-in VCF annotations), as well as the associated rsIDs, chromosomal and known chromosomal
 start and end positions. Also returns a data.frame of all the rsIDs and associated information such
-allele frequencies in the databases.
+allele frequencies in the databases. The two values are returned in a data.frame where \code{nvs} is the
+accessor for the variants, and \code{rsids} is the accessor for the rsID information.
 }
 \description{
 This function takes a data.frame like object containing the variant
