@@ -47,3 +47,45 @@ variants <- PhenoGenRLib::linkVariantsWithMetadata(
 ```
 
 Checkout the documents and vignettes for where to go from here!
+
+# Contributions
+
+PhenoGenRLib stands on the shoulder of giants, and it would be a disservice to not name them:
+
+- Thank you Syed Haider et al. for providing bedr. It was greatly helpful in simplifying the data ingress features.
+- Thanks to the entire Biomart Team for providing an awesome and easy to use interface to large public databases!
+- ggplot2 was very helpful in generating figures. Thanks to Wickham et. al!
+- This entire project wouldn't have been possible without the help of the TidyVerse team. Despite not using every single package from their library, much work and diagnostic made use of their tools.
+- Tibble helped simplify data storage and accession. Thanks Muller et. al!
+
+No generative AI was used for this project directly, however, learning about how R works and how some of the syntax differs from other languages was aided by ChatGPT.
+
+This was a BCB410H1 UofT Bioinformatics project by Harrison Deng. 
+
+# Citations
+
+```
+Müller K, Wickham H (2023). _tibble: Simple Data Frames_. R package
+  version 3.2.1, <https://CRAN.R-project.org/package=tibble>.
+
+Haider S, Waggott D, C. Boutros P (2019). _bedr: Genomic Region
+  Processing using Tools Such as 'BEDTools', 'BEDOPS' and 'Tabix'_. R
+  package version 1.0.7, <https://CRAN.R-project.org/package=bedr>.
+
+BioMart and Bioconductor: a powerful link between biological
+  databases and microarray data analysis. Steffen Durinck, Yves Moreau,
+  Arek Kasprzyk, Sean Davis, Bart De Moor, Alvis Brazma and Wolfgang
+  Huber, Bioinformatics 21, 3439-3440 (2005).
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+  Springer-Verlag New York, 2016.
+
+Wickham H, Hester J, Bryan J (2023). _readr: Read Rectangular Text
+  Data_. R package version 2.1.4,
+  <https://CRAN.R-project.org/package=readr>.
+
+```
+
+# Acknowledgements
+
+This package was developed as part of an assessment for 2023 BCB410H: Applied Bioinformatics course at the University of Toronto, Toronto, CANADA. PhenoGenRLib welcomes issues, enhancement requests, and other contributions. To submit an issue, use the GitHub issues.
