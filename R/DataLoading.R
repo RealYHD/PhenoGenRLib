@@ -74,7 +74,8 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
 #' @return Returns variant data.frame containing all pre-existing information (including metadata and
 #' other built-in VCF annotations), as well as the associated rsIDs, chromosomal and known chromosomal
 #' start and end positions. Also returns a data.frame of all the rsIDs and associated information such
-#' allele frequencies in the databases.
+#' allele frequencies in the databases. The two values are returned in a data.frame where `nvs` is the 
+#' accessor for the variants, and `rsids` is the accessor for the rsID information. 
 #' 
 #' @export 
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
@@ -94,7 +95,7 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
     }
 
     mappedVariants <- base::merge(mappingData, rsids[c("chrom_start", "chrom_end", "refsnp_id")], by = c("chrom_start", "chrom_end"), all.x = TRUE)
-    return(c(mappedVariants, rsids))
+    return(base::data.frame(nvs = mappedVariants, rsids = rsids))
 }
 
 coordinatesFromVariants <- function(variants, offset = 0) {

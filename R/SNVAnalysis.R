@@ -110,7 +110,7 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
         specificRsidStats <- rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]
         totalControlSamples <- base::ceiling(specificRsidStats$minor_allele_count / specificRsidStats$minor_allele_freq)
         controlFreqs <- base::lapply(allAlleles, function(x) {
-            if (x == specificRsidStats[["minor_allele"]]) {
+            if (x == specificRsidStats[["minor_allele"]][1]) {
                 return(specificRsidStats[["minor_allele_count"]])
             } else {
                 return(totalControlSamples - specificRsidStats[["minor_allele_count"]])
@@ -118,15 +118,16 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
         })
         freqTable <- data.frame(
             case = base::unlist(caseFreqs),
-            control = base::unlist(controlFreqs),
-            row.names = allAlleles
+            control = base::unlist(controlFreqs)
         )
+        row.names(freqTable) <- allAlleles
+
         result <- multipleAssociationTests(
             generate2wayFromMxN(freqTable),
             useChi = useChi,
             groupName = rsid
         )
-        results <- if (base::is.nan(results)) result else base::rbind(results, result)
+        results <- if (base::is.null(results)) result else base::rbind(results, result)
     }
     return(results)
 }
@@ -180,7 +181,9 @@ multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = NULL)
         )
         results <- (if (base::is.null(results)) result else rbind(results, result))
     }
-    base::colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
-    base::row.names(results) <- NULL
+    if (nrow(results) > 1) {
+        base::colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
+        base::row.names(results) <- NULL
+    }
     return(results)
 }
