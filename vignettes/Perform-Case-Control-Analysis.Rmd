@@ -44,8 +44,6 @@ mappings <- PhenoGenRLib::mapRsidsForVariants(
 
 Few things to note: We passed in the string `chromosome` to tell the function where to find the chromosome identity to match in the Ensembl database. Furthermore, we passed in a offset because the VCFs were generated using a reference sequence that did not take up the entire chromosome, rather, just a specific gene. We therefore need to offset all VCF positions to translate to chromosomal positions.
 
-Perfect.
-
 3. Lastly, let's assume that the VCFs were generated from patients with disease X. We want to know if any of the nucleotide variations are associated statistically with disease X. To do this, we'll compare the frequency of mutations from our hypothetically sick patients, to those that are healthy (Ensembl database).
 
 ```{r analysis, eval=FALSE}
