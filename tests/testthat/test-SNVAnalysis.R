@@ -50,11 +50,12 @@ testthat::test_that("Verify the multiple tests for correlation function returns 
   )
 })
 
-test_that("case control with ensembl database as control produces expected table", {
+test_that("case control with ensembl database as control results not changed", {
   results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
     MappedVariants,
     RsIDs,
     totalCaseSamples = 8
   )
-  expect_type(results, "data.frame")
+  testthat::expect_s3_class(results, "data.frame")
+  testthat::expect_snapshot(results)
 })
