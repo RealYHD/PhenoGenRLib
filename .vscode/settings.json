@@ -1,21 +1,23 @@
 {
-    "r.rterm.linux": "env/bin/R",
-    "r.libPaths": [
-        "/home/jovyan/BCB410H/PhenoGenRLib/env/lib/R/library/"
-    ],
-    "r.rpath.linux": "env/bin/R",
-    "cSpell.words": [
-        "bedr",
-        "biomart",
-        "chrom",
-        "Ensembl",
-        "Freqs",
-        "gmap",
-        "refsnp",
-        "rentrez",
-        "rsid",
-        "Rsids",
-        "stringr",
-        "vcfs"
-    ]
+  "r.rterm.linux": "env/bin/R",
+  "r.libPaths": ["/home/jovyan/BCB410H/PhenoGenRLib/env/lib/R/library/"],
+  "r.rpath.linux": "env/bin/R",
+  "cSpell.words": [
+    "bedr",
+    "biomart",
+    "byrow",
+    "chrom",
+    "Ensembl",
+    "Freqs",
+    "gmap",
+    "readr",
+    "refsnp",
+    "rentrez",
+    "rsid",
+    "Rsids",
+    "stringr",
+    "testthat",
+    "tibble",
+    "vcfs"
+  ]
 }
