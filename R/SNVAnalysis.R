@@ -98,7 +98,6 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
     results <- data.frame(matrix(ncol = 5, nrow = 0))
 
     for (rsid in uniqueRsids) { # for every unique variant
-        print(rsid)
         specificVariants <- variants[which(variants["refsnp_id"]==rsid),] # get all same variants
         refAllele <- specificVariants[[1, "REF"]] # Fetch the reference allele for the set of variants
         controlAlleles <- unlist(stringr::str_split(rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]$allele, "/"))
@@ -208,4 +207,3 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
     )
     return(results)
 }
-
