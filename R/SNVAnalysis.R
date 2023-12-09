@@ -152,38 +152,42 @@ generate2WayFromMxN <- function(mxn) {
     return(results)
 }
 
-multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = "Untitled") {
-    results = data.frame(matrix(ncol = 6, nrow = 0))
-    colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
-    for (mat in matrices) {
-        mat <- base::as.matrix(mat)
+multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {
+    results = data.frame(matrix(ncol = 5, nrow = 0))
+    for (mxn in mxns) {
+        mat <- base::as.matrix(mxn)
 
-        result <- base::tryCatch(
+        base::tryCatch(
             {
                 result <- if (!useChi) stats::fisher.test(mat) else stats::chisq.test(mat)
-                testResultSummary <- c(
-                    groupName,
-                    list(base::colnames(mat)),
-                    list(base::row.names(mat)),
-                    result$data.name,
-                    result$p.value,
-                    result$method
+                testResultSummary <- data.frame(
+                    test_group = groupName,
+                    group = base::toString(base::colnames(mxn)),
+                    categories = base::toString(base::row.names(mxn)),
+                    p_value = base::as.numeric(result$p.value),
+                    method = result$method
                 )
-                return(testResultSummary)
+                # Append result as a row to results
+                results <- rbind(results, testResultSummary, stringsAsFactors = FALSE)
             },
             error = function(e) {
-                testResultSummary <- c(
-                    groupName,
-                    list(base::colnames(mat)),
-                    list(base::row.names(mat)),
-                    base::toString(e),
-                    NA,
-                    "NA"
+                testResultSummary <- data.frame(
+                    test_group = groupName,
+                    group = base::toString(base::colnames(mxn)),
+                    categories = base::toString(base::colnames(mxn)),
+                    p_value = NA,
+                    method = base::toString(e)
                 )
-                return(testResultSummary)
+                results <- rbind(results, testResultSummary, stringsAsFactors = FALSE)
             }
         )
-        results <- rbind(results, result)
     }
+    colnames(results) <- c(
+        "test_group",
+        "groups",
+        "categories",
+        "p_value",
+        "method"
+    )
     return(results)
 }
