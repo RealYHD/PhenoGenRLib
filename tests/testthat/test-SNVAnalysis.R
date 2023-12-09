@@ -1,7 +1,7 @@
 library(PhenoGenRLib)
 
 testthat::test_that("pairwise table generation produces correct permutations of 3x3", {
-  results <- PhenoGenRLib:::generate2WayFromMxN(
+  results <- PhenoGenRLib::generate2WayFromMxN(
     data.frame(
       C1 = c(1,2,3),
       C2 = c(4,5,6),
@@ -27,7 +27,7 @@ testthat::test_that("pairwise table generation produces correct permutations of 
 })
 
 testthat::test_that("Verify the multiple tests for correlation function returns correct p-values", {
-  results <- PhenoGenRLib:::multipleAssociationTests(
+  results <- PhenoGenRLib::multipleAssociationTests(
     list(
       data.frame(C1 = c(1,2), C2 = c(4,28), row.names = c("R1", "R2")),
       data.frame(C1 = c(4,2), C2 = c(4,28), row.names = c("R1", "R3"))

@@ -1,12 +1,13 @@
 library(stringr)
 library(tibble)
+library(dplyr)
 
 #' Variance Case-Control Analysis where the Case and Control are User Provided
 #' 
 #' Similar to varianceCCAnalysisEnsembl, however, instead of using Ensembl,
 #' the name of a column from the metadata used to load the VCFs is taken.
 #' The function then finds all possible categorical values for the column
-#' and builts pairwise tables based off these.
+#' and built pairwise tables based off these.
 #' 
 #' @param variants The data.frame containing the variant information.
 #' @param totalCaseSamples The total number of case samples that goes into
@@ -89,19 +90,22 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #'  
 #' @export 
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
-    rsidsWithFreq <- rsids[!base::is.na(rsids["minor_allele_count"]),] # Only keep variants with frequency counts
+    rsidsWithFreq <- dplyr::distinct(rsids[!base::is.na(rsids["minor_allele_count"]),]) # Only keep variants with frequency counts
     uniqueRsids <- base::intersect( # Get all the unique variants that exist between the two groupings
         base::unique(variants[["refsnp_id"]]),
         base::unique(rsidsWithFreq[["refsnp_id"]])
     )
-    results <- NULL
+    results <- data.frame(matrix(ncol = 5, nrow = 0))
+
     for (rsid in uniqueRsids) { # for every unique variant
+        print(rsid)
         specificVariants <- variants[which(variants["refsnp_id"]==rsid),] # get all same variants
         refAllele <- specificVariants[[1, "REF"]] # Fetch the reference allele for the set of variants
+        controlAlleles <- unlist(stringr::str_split(rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]$allele, "/"))
         allAlleles <- base::unique(c( # Find all unique Allele variants
             refAllele,
             specificVariants[["ALT"]],
-            unlist(stringr::str_split(rsids[rsids$refsnp_id==rsid,]$allele, "/"))
+            controlAlleles
         ))
         numRef <- totalCaseSamples - nrow(specificVariants) # Calculate number of cases with reference allele
         caseFreqs <- base::lapply(allAlleles, # Count number of alleles for each alternate allele
@@ -111,13 +115,19 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
             }
         )
         specificRsidStats <- rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,] # Get all variants with the same IDs that have frequency data
-        totalControlSamples <- base::ceiling(specificRsidStats$minor_allele_count / specificRsidStats$minor_allele_freq)
+        totalControlSamples <- base::ceiling(specificRsidStats$minor_allele_count / specificRsidStats$minor_allele_freq)[[1]] # Should be the same across all alleles
         controlFreqs <- base::lapply(allAlleles, function(x) {
-            if (length(specificRsidStats[["minor_allele"]]) == 1 && x == specificRsidStats[["minor_allele"]]) {
-                return(specificRsidStats[["minor_allele_count"]])
-            } else {
-                return(totalControlSamples - specificRsidStats[["minor_allele_count"]])
+            for (mai in 1:nrow(specificRsidStats)) {
+                ma <- specificRsidStats[mai, c("minor_allele", "minor_allele_count", "minor_allele_freq")]
+                if (x == ma[["minor_allele"]]) {
+                    count <- ma[["minor_allele_count"]]
+                    return(count)
+                } 
             }
+            if (x %in% controlAlleles) { # IF not a novel allele found in case dataset
+                return(totalControlSamples - sum(specificRsidStats[["minor_allele_count"]])) # Then it must be the major allele  
+            }
+            return(0) # Assume no catalogued SNVs of this variety
         })
         freqTable <- data.frame(
             case = base::unlist(caseFreqs),
@@ -130,12 +140,15 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
             useChi = useChi,
             groupName = rsid
         )
-        results <- if (base::is.null(results)) result else base::rbind(results, result)
+        results <- base::rbind(results, result, stringsAsFactors = FALSE)
     }
     return(results)
 }
 
+#' Generates Two-Way Tables from MxN Data Frame
+#' @export 
 generate2WayFromMxN <- function(mxn) {
+    # TODO Validate input
     # TODO Check for data frame specifically.
     columnCombs <- utils::combn(base::ncol(mxn), m = 2)
     rowCombs <- utils::combn(base::nrow(mxn), m = 2)
@@ -152,8 +165,12 @@ generate2WayFromMxN <- function(mxn) {
     return(results)
 }
 
+#' Performs Multiple Association Tests on Arrays of Matrices
+#' 
+#' @export 
 multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {
-    results = data.frame(matrix(ncol = 5, nrow = 0))
+    # TODO Validate input
+    results <- data.frame(matrix(ncol = 5, nrow = 0))
     for (mxn in mxns) {
         mat <- base::as.matrix(mxn)
 
@@ -191,3 +208,4 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
     )
     return(results)
 }
+
