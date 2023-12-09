@@ -135,33 +135,34 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
     return(results)
 }
 
-generate2WayFromMxN <- function(matrix) {
-    matrix <- base::as.matrix(matrix)
-    columnCombs <- utils::combn(base::ncol(matrix), m = 2)
-    rowCombs <- utils::combn(base::nrow(matrix), m = 2)
+generate2WayFromMxN <- function(mxn) {
+    # TODO Check for data frame specifically.
+    columnCombs <- utils::combn(base::ncol(mxn), m = 2)
+    rowCombs <- utils::combn(base::nrow(mxn), m = 2)
     results <- list()
 
     for (col in 1:base::ncol(columnCombs)) {
         colComb <- columnCombs[,col]
         for (row in 1:base::ncol(rowCombs)) {
             rowComb <- rowCombs[,row]
-            pairwise <- matrix[rowComb, colComb]
-            results <- c(results, list(pairwise))
+            pairwise <- mxn[rowComb, colComb]
+            results[[length(results) + 1]] <- data.frame(pairwise)
         }
     }
     return(results)
 }
 
-multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = NULL) {
-    results = NULL
+multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = "Untitled") {
+    results = data.frame(matrix(ncol = 6, nrow = 0))
+    colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
     for (mat in matrices) {
         mat <- base::as.matrix(mat)
-        # print(mat)
+
         result <- base::tryCatch(
             {
                 result <- if (!useChi) stats::fisher.test(mat) else stats::chisq.test(mat)
                 testResultSummary <- c(
-                    if (base::is.null(groupName)) "No name" else groupName,
+                    groupName,
                     list(base::colnames(mat)),
                     list(base::row.names(mat)),
                     result$data.name,
@@ -172,7 +173,7 @@ multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = NULL)
             },
             error = function(e) {
                 testResultSummary <- c(
-                    if (base::is.null(groupName)) "No name" else groupName,
+                    groupName,
                     list(base::colnames(mat)),
                     list(base::row.names(mat)),
                     base::toString(e),
@@ -182,11 +183,7 @@ multipleAssociationTests <- function(matrices, useChi = FALSE, groupName = NULL)
                 return(testResultSummary)
             }
         )
-        results <- (if (base::is.null(results)) result else rbind(results, result))
-    }
-    if (!base::is.null(results) && nrow(results) > 1) {
-        base::colnames(results) <- c("Test Group", "Groups", "Categories", "Call", "P-Value", "Method")
-        base::row.names(results) <- NULL
+        results <- rbind(results, result)
     }
     return(results)
 }

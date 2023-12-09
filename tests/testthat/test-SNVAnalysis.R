@@ -2,32 +2,38 @@ library(PhenoGenRLib)
 
 testthat::test_that("pairwise table generation produces correct permutations of 3x3", {
   results <- PhenoGenRLib:::generate2WayFromMxN(
-    matrix(
-      data = c(
-        1,2,3,
-        4,5,6,
-        7,8,9
-      ),
-      nrow = 3,
-      ncol = 3,
-      byrow = TRUE
+    data.frame(
+      C1 = c(1,2,3),
+      C2 = c(4,5,6),
+      C3 = c(7,8,9),
+      row.names = c("R1", "R2", "R3")
     )
   )
   testthat::expect_type(results, "list")
-  testthat::expect_equal(
-    results,
-    list(
-      matrix(data = c(1,2,4,5), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(1,2,7,8), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(4,5,7,8), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(1,3,4,6), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(1,3,7,9), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(4,6,7,9), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(2,3,5,6), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(2,3,8,9), nrow = 2, ncol = 2, byrow = TRUE),
-      matrix(data = c(5,6,8,9), nrow = 2, ncol = 2, byrow = TRUE)
+  testthat::expect_setequal(
+    object = results,
+    expected = list(
+      data.frame(C1 = c(1,2), C2 = c(4,5), row.names = c("R1", "R2")),
+      data.frame(C1 = c(1,3), C2 = c(4,6), row.names = c("R1", "R3")),
+      data.frame(C1 = c(2,3), C2= c(5,6), row.names = c("R2", "R3")),
+      data.frame(C1 = c(1,2), C3 = c(7,8), row.names = c("R1", "R2")),
+      data.frame(C1 = c(1,3), C3 = c(7,9), row.names = c("R1", "R3")),
+      data.frame(C1 = c(2,3), C3 = c(8,9), row.names = c("R2", "R3")),
+      data.frame(C2 = c(4,5), C3 = c(7,8), row.names = c("R1", "R2")),
+      data.frame(C2 = c(4,6), C3 = c(7,9), row.names = c("R1", "R3")),
+      data.frame(C2 = c(5,6), C3 = c(8,9), row.names = c("R2", "R3"))
     )
   )
+})
+
+testthat::test_that("Verify the multiple tests for correlation function returns correct p-values", {
+  results <- PhenoGenRLib:::multipleAssociationTests(
+    list(
+      matrix(data = c(1,2,4,5), nrow = 2, ncol = 2, byrow = TRUE),
+      matrix(data = c(1,2,7,8), nrow = 2, ncol = 2, byrow = TRUE)
+    )
+  )
+  testthat::expect_type(results, "data.frame")
 })
 
 test_that("case control with ensembl database as control produces expected table", {
