@@ -53,7 +53,7 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
         row.names(freqMatrix) <- allAlleles
         colnames(freqMatrix) <- phenotypes
         results <- multipleAssociationTests(
-            generate2wayFromMxN(freqMatrix),
+            generate2WayFromMxN(freqMatrix),
             useChi = useChi,
             groupName = rsid
         )
@@ -89,25 +89,28 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #'  
 #' @export 
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
-    rsidsWithFreq <- rsids[!base::is.na(rsids["minor_allele_count"]),]
-    uniqueRsids <- base::intersect(base::unique(variants[["refsnp_id"]]), base::unique(rsidsWithFreq[["refsnp_id"]]))
+    rsidsWithFreq <- rsids[!base::is.na(rsids["minor_allele_count"]),] # Only keep variants with frequency counts
+    uniqueRsids <- base::intersect( # Get all the unique variants that exist between the two groupings
+        base::unique(variants[["refsnp_id"]]),
+        base::unique(rsidsWithFreq[["refsnp_id"]])
+    )
     results <- NULL
-    for (rsid in uniqueRsids) {
-        specificVariants <- variants[which(variants["refsnp_id"]==rsid),]
-        refAllele <- specificVariants[[1, "REF"]]
-        allAlleles <- base::unique(c(
+    for (rsid in uniqueRsids) { # for every unique variant
+        specificVariants <- variants[which(variants["refsnp_id"]==rsid),] # get all same variants
+        refAllele <- specificVariants[[1, "REF"]] # Fetch the reference allele for the set of variants
+        allAlleles <- base::unique(c( # Find all unique Allele variants
             refAllele,
             specificVariants[["ALT"]],
             unlist(stringr::str_split(rsids[rsids$refsnp_id==rsid,]$allele, "/"))
         ))
-        numRef <- totalCaseSamples - nrow(specificVariants)
-        caseFreqs <- base::lapply(allAlleles,
+        numRef <- totalCaseSamples - nrow(specificVariants) # Calculate number of cases with reference allele
+        caseFreqs <- base::lapply(allAlleles, # Count number of alleles for each alternate allele
             function(x) {
-                if (x == refAllele) return(numRef)
-                return(length(which(specificVariants$ALT==x)))
+                if (x == refAllele) return(numRef) # If the requested allele to count is ref, return ref count
+                return(length(which(specificVariants$ALT==x))) # Otherwise, count the alternate alleles that equal X
             }
         )
-        specificRsidStats <- rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]
+        specificRsidStats <- rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,] # Get all variants with the same IDs that have frequency data
         totalControlSamples <- base::ceiling(specificRsidStats$minor_allele_count / specificRsidStats$minor_allele_freq)
         controlFreqs <- base::lapply(allAlleles, function(x) {
             if (length(specificRsidStats[["minor_allele"]]) == 1 && x == specificRsidStats[["minor_allele"]]) {
@@ -123,7 +126,7 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
         row.names(freqTable) <- allAlleles
 
         result <- multipleAssociationTests(
-            generate2wayFromMxN(freqTable),
+            generate2WayFromMxN(freqTable),
             useChi = useChi,
             groupName = rsid
         )
@@ -132,12 +135,12 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
     return(results)
 }
 
-generate2wayFromMxN <- function(matrix) {
+generate2WayFromMxN <- function(matrix) {
     matrix <- base::as.matrix(matrix)
     columnCombs <- utils::combn(base::ncol(matrix), m = 2)
     rowCombs <- utils::combn(base::nrow(matrix), m = 2)
     results <- list()
-    
+
     for (col in 1:base::ncol(columnCombs)) {
         colComb <- columnCombs[,col]
         for (row in 1:base::ncol(rowCombs)) {
