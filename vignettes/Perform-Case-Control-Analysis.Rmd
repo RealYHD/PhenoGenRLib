@@ -37,7 +37,7 @@ nvs <- PhenoGenRLib::linkVariantsWithMetadata(
 ```{r annotate}
 mappings <- PhenoGenRLib::mapRsidsForVariants(
   "chromosome",
-  variants = nvs,
+  variants = UnmappedVariants,
   offset = 3074680
 )
 ```
