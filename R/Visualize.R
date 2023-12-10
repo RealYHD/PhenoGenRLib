@@ -1,6 +1,3 @@
-library(ggplot2)
-
-
 #' Visualize Variant Distribution
 #' 
 #' Sometimes, it may be beneficial to know approximately which
@@ -12,7 +9,9 @@ library(ggplot2)
 #' @param variants The data.frame containing all the variant
 #' information.
 #' 
-#' @export 
+#' @export
+#' 
+#' @import ggplot2
 visVariantDistribution <- function(variants) {
     greatestNVPos <- base::max(
         variants$POS + base::apply(variants["REF"], MARGIN = 1, base::nchar)
@@ -31,10 +30,10 @@ visVariantDistribution <- function(variants) {
     distribution <- base::data.frame(positions, caseOccurrences)
     
     ggplot2::ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
-        geom_bar(stat = "identity", fill = "red", width = 1) +
-        geom_point(size = 2, colour = "red") +
-        labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
-        theme(aspect.ratio = 1/2)
+        ggplot2::geom_bar(stat = "identity", fill = "red", width = 1) +
+        ggplot2::geom_point(size = 2, colour = "red") +
+        ggplot2::labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
+        ggplot2::theme(aspect.ratio = 1/2)
     
     return(NULL)
 }

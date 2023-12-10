@@ -1,7 +1,3 @@
-library(stringr)
-library(tibble)
-library(dplyr)
-
 #' Variance Case-Control Analysis where the Case and Control are User Provided
 #' 
 #' Similar to varianceCCAnalysisEnsembl, however, instead of using Ensembl,
@@ -89,6 +85,9 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' employed for each test.
 #'  
 #' @export 
+#' 
+#' @importFrom dplyr distinct
+#' @importFrom stringr str_split
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
     rsidsWithFreq <- dplyr::distinct(rsids[!base::is.na(rsids["minor_allele_count"]),]) # Only keep variants with frequency counts
     uniqueRsids <- base::intersect( # Get all the unique variants that exist between the two groupings
@@ -128,7 +127,7 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
             }
             return(0) # Assume no catalogued SNVs of this variety
         })
-        freqTable <- data.frame(
+        freqTable <- base::data.frame(
             case = base::unlist(caseFreqs),
             control = base::unlist(controlFreqs)
         )
