@@ -35,5 +35,5 @@ employed for each test.
 Similar to varianceCCAnalysisEnsembl, however, instead of using Ensembl,
 the name of a column from the metadata used to load the VCFs is taken.
 The function then finds all possible categorical values for the column
-and builts pairwise tables based off these.
+and built pairwise tables based off these.
 }
