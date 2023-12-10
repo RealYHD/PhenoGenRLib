@@ -1,9 +1,3 @@
-library(readr)
-library(tibble)
-library(bedr)
-library(biomaRt)
-
-
 #' Link Existing VCF files with Metadata
 #' 
 #' This function's purpose is to join a series of VCFs together and
@@ -26,6 +20,9 @@ library(biomaRt)
 #' the associated metadata is attached column-wise to the right. 
 #' 
 #' @export 
+#' 
+#' @importFrom readr read_csv
+#' @importFrom bedr read.vcf
 linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
     metadata <- readr::read_csv(metadataFile)
     variantData <- NULL
@@ -78,6 +75,8 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
 #' accessor for the variants, and `rsids` is the accessor for the rsID information. 
 #' 
 #' @export 
+#' 
+#' 
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
     nvCoords <- coordinatesFromVariants(
         variants = variants,
@@ -90,8 +89,8 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
 
     batchIndex <- 1
     rsids <- NULL
-    while(batchIndex <= nrow(nvCoords)) {
-        endIndex <- min(batchIndex + batchSize - 1, nrow(nvCoords))
+    while(batchIndex <= base::nrow(nvCoords)) {
+        endIndex <- base::min(batchIndex + batchSize - 1, base::nrow(nvCoords))
         nvCoordBatch <- nvCoords[batchIndex:endIndex,]
         rsidBatch <- mapRsidsForVariantPositions(coordinates = nvCoordBatch, hostGenVersion = hostGenVersion)
         rsids <- if (base::is.null(rsids)) rsidBatch else base::rbind(rsids, rsidBatch)
@@ -109,8 +108,11 @@ coordinatesFromVariants <- function(variants, chromCol, offset = 0) {
     return(queryData)
 }
 
+#' Maps RSIDs based on Variant Positions
+#' 
+#' @importFrom biomaRt useEnsembl getBM
 mapRsidsForVariantPositions <- function(coordinates, hostGenVersion = 38) {
-    coords <- apply(coordinates, 1, paste, collapse = ":")
+    coords <- base::apply(coordinates, 1, paste, collapse = ":")
     snpMart <- biomaRt::useEnsembl(biomart = "snps", dataset = "hsapiens_snp", host = (if (hostGenVersion == 38) "https://www.ensembl.org" else "https://grch37.ensembl.org"))
     rsids <- biomaRt::getBM(
         attributes = c("refsnp_id", "allele", "minor_allele", "minor_allele_count", "minor_allele_freq", "chr_name", "chrom_start", "chrom_end"),
