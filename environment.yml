@@ -1,0 +1,8 @@
+name: phenogenrlib
+channels:
+  - anaconda
+  - conda-forge
+dependencies:
+  - r-base
+  - r-essentials
+  - r-devtools
