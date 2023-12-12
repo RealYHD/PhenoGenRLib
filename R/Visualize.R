@@ -29,11 +29,11 @@ visVariantDistribution <- function(variants) {
     positions <- smallestNVPos:(greatestNVPos - 1)
     distribution <- base::data.frame(positions, caseOccurrences)
     
-    ggplot2::ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
+    plot <- ggplot2::ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
         ggplot2::geom_bar(stat = "identity", fill = "red", width = 1) +
         ggplot2::geom_point(size = 2, colour = "red") +
         ggplot2::labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
         ggplot2::theme(aspect.ratio = 1/2)
     
-    return(NULL)
+    return(plot)
 }
