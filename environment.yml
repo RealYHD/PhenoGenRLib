@@ -3,6 +3,7 @@ channels:
   - anaconda
   - conda-forge
 dependencies:
+  - python
   - r-base
   - r-essentials
   - r-devtools
