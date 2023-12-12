@@ -7,3 +7,4 @@ dependencies:
   - r-essentials
   - r-devtools
   - r-covr
+  - r-usethis
