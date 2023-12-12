@@ -22,6 +22,19 @@
 #' 
 #' @export 
 varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, useChi = FALSE) {
+    if (!base::is.data.frame(variants)) {
+        base::stop("Variants should be a data frame.")
+    }
+    if (!base::is.numeric(totalCaseSamples)) {
+        base::stop("The total number of case samples should be numeric.")
+    }
+    if (! phenotypeName %in% variants) {
+        base::stop("The name of the phenotype must be a column in the variants data frame.")
+    }
+    if (!base::is.logical(useChi)) {
+        base::stop("Parameter determining whether or not to use Chi-Square test must be logical.")
+    }
+
     phenotypes <- base::unique(variants[[phenotypeName]])
     uniqueRsids <- base::unique(variants[["refsnp_id"]])
     results <- NULL
@@ -89,6 +102,20 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' @importFrom dplyr distinct
 #' @importFrom stringr str_split
 varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
+    if (!base::is.data.frame(variants)) {
+        base::stop("Variants should be a data frame.")
+    }
+    if (!base::is.data.frame(rsids)) {
+        base::stop("RSIDs should be a data frame.")
+    }
+    if (!base::is.numeric(totalCaseSamples)) {
+        base::stop("The total number of case samples should be numeric.")
+    }
+    if (!base::is.logical(useChi)) {
+        base::stop("Parameter determining whether or not to use Chi-Square test must be logical.")
+    }
+    
+
     rsidsWithFreq <- dplyr::distinct(rsids[!base::is.na(rsids["minor_allele_count"]),]) # Only keep variants with frequency counts
     uniqueRsids <- base::intersect( # Get all the unique variants that exist between the two groupings
         base::unique(variants[["refsnp_id"]]),
@@ -144,10 +171,15 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
 }
 
 #' Generates Two-Way Tables from MxN Data Frame
-#' @export 
+#' 
+#' 
+#' 
+#' @export
 generate2WayFromMxN <- function(mxn) {
-    # TODO Validate input
-    # TODO Check for data frame specifically.
+    if (!base::is.data.frame(mxn)) {
+        base::stop("The input should be a data.frame.")
+    }
+
     columnCombs <- utils::combn(base::ncol(mxn), m = 2)
     rowCombs <- utils::combn(base::nrow(mxn), m = 2)
     results <- list()
@@ -167,7 +199,13 @@ generate2WayFromMxN <- function(mxn) {
 #' 
 #' @export 
 multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {
-    # TODO Validate input
+    if (!base::is.list(mxns)) {
+        base::stop("The input should be a list of data frames.")
+    }
+    if (!base::is.logical(useChi)) {
+        base::stop("Parameter determining whether or not to use Chi-Square test must be logical.")
+    }
+    
     results <- data.frame(matrix(ncol = 5, nrow = 0))
     for (mxn in mxns) {
         mat <- base::as.matrix(mxn)
