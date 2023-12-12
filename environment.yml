@@ -9,3 +9,4 @@ dependencies:
   - r-devtools
   - r-covr
   - r-usethis
+prefix: ./env
