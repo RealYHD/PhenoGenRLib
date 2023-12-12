@@ -4,6 +4,7 @@ pipeline {
         stage("install") {
             steps {
                 sh 'mamba env update --file environment.yml --prefix ./env || mamba env create --force --file environment.yml --prefix ./env'
+                sh 'Rscript scripts/install.R'
                 sh 'echo conda environment: $CONDA_PREFIX'
             }
         }
