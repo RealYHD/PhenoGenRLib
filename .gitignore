@@ -249,3 +249,4 @@ rsconnect/
 
 # End of https://www.toptal.com/developers/gitignore/api/r,visualstudiocode,python
 inst/doc
+tests/testthat/test_results.xml
