@@ -172,7 +172,11 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
 
 #' Generates Two-Way Tables from MxN Data Frame
 #' 
+#' This function takes a MxN data and solves for all pairwise combinations
+#' of rows and columns and creates lists of the 2x2 matrices that result
+#' from these combinations.
 #' 
+#' @param mxn The MxN data frame to solve for pairwise permutations of.
 #' 
 #' @export
 generate2WayFromMxN <- function(mxn) {
@@ -196,6 +200,15 @@ generate2WayFromMxN <- function(mxn) {
 }
 
 #' Performs Multiple Association Tests on Arrays of Matrices
+#' 
+#' For a list of 2x2 data frames, this function calculates the association
+#' between the the individual tables categorical variables by application of
+#' either Fisher's exact test or Chi-Square test.
+#' 
+#' @param mxns A list of 2x2 data frames.
+#' @param useChi Whether or not to use Chi-Square tests instead of Fisher's exact test
+#' @param groupName The name of this test group. Annotates the tests ran with this name 
+#' in the results. 
 #' 
 #' @export 
 multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {
