@@ -7,9 +7,20 @@ pipeline {
                 sh 'echo conda environment: $CONDA_PREFIX'
             }
         }
+        stage("check") {
+            steps {
+                sh 'Rscript scripts/check.R'
+            }
+        }
         stage("unit tests") {
             steps {
-                sh 'R devtools::test()'
+                sh 'Rscript scripts/test.R'
+                xunit checksName: '', tools: [JUnit(excludesPattern: '', pattern: 'tests/testthat/test_results.xml', stopProcessingIfError: true)]
+            }
+        }
+        stage("build") {
+            steps {
+                sh 'Rscript scripts/build.R'
             }
         }
     }
