@@ -17,3 +17,8 @@ reference sequence. This function generates a simple figure
 depicting the positions on the horizontal axis and the number
 of variants on the vertical axis.
 }
+\examples{
+plot <- visVariantDistribution(MappedVariants)
+View(plot)
+
+}

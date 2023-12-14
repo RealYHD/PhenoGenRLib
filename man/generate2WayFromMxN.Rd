@@ -6,6 +6,15 @@
 \usage{
 generate2WayFromMxN(mxn)
 }
+\arguments{
+\item{mxn}{The MxN data frame to solve for pairwise permutations of.}
+}
+\value{
+Returns a list of 2x2 two-way tables in the form of data frames
+while retaining the row and column names.
+}
 \description{
-Generates Two-Way Tables from MxN Data Frame
+This function takes a MxN data and solves for all pairwise combinations
+of rows and columns and creates lists of the 2x2 matrices that result
+from these combinations.
 }

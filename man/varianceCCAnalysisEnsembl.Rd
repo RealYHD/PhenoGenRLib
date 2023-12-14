@@ -20,7 +20,7 @@ Default is FALSE.}
 }
 \value{
 A data.frame containing all the p-values and the shape of the 2-way table
-employed for each test.
+employed for each test. The structure is that of
 }
 \description{
 This function makes it easy to test for potential associations between the
@@ -34,4 +34,7 @@ contrast to various other tests. It is more computational intensive however. Hen
 this function also allows the use of the chi-square test. The table formed is between
 whether or not the position is mutated, and whether or not the mutation occurred in a
 healthy individual (the control group), or the case study individual.
+}
+\seealso{
+PhenoGenRLib::MultipleAssociationTests
 }

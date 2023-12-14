@@ -45,3 +45,11 @@ to find rsIDs for the well-known variants that appear. The rsIDs are then
 added column-wise to each of the variants in the original data.frame. This
 updated data.frame is what is returned.
 }
+\examples{
+mappedVariants <- mapRsidsForVariants(
+chromCol = "chromosome",
+variants = UnmappedVariants,
+offset = 3074680
+)
+View(mappedVariants)
+}

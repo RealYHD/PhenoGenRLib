@@ -95,7 +95,8 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' Default is FALSE.
 #' 
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
-#' employed for each test.
+#' employed for each test. The structure is that of 
+#' @seealso PhenoGenRLib::MultipleAssociationTests
 #'  
 #' @export 
 #' 
@@ -178,6 +179,9 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
 #' 
 #' @param mxn The MxN data frame to solve for pairwise permutations of.
 #' 
+#' @return Returns a list of 2x2 two-way tables in the form of data frames
+#' while retaining the row and column names.
+#' 
 #' @export
 generate2WayFromMxN <- function(mxn) {
     if (!base::is.data.frame(mxn)) {
@@ -210,6 +214,23 @@ generate2WayFromMxN <- function(mxn) {
 #' @param groupName The name of this test group. Annotates the tests ran with this name 
 #' in the results. 
 #' 
+#' @return Returns a data.frame with columns describing the 2-way table that was used for
+#' the test:
+#' \itemize{
+#'   \item test_group - The group the test belongs too. Often used to group based on position.
+#'   \item groups - The names of the columns of the 2-way table tested on.
+#'   \item categories - The names of rows of the 2-way table tested on.
+#'   \item p_value - The resulting p-value
+#'   \item additional - Any additional information regarding the automated test.
+#' }
+#' 
+#' @examples
+#' testResults <- multipleAssociationTests(
+#'   mxns = list(data.frame(A = c(1, 2, 3), B = c(1, 2, 3), row.names = c("C", "D"))),
+#'   groupName = "First Group"
+#' )
+#' View(testResults)
+#' 
 #' @export 
 multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {
     if (!base::is.list(mxns)) {
@@ -219,41 +240,41 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
         base::stop("Parameter determining whether or not to use Chi-Square test must be logical.")
     }
     
-    results <- data.frame(matrix(ncol = 5, nrow = 0))
+    results <- base::data.frame(base::matrix(ncol = 5, nrow = 0))
     for (mxn in mxns) {
         mat <- base::as.matrix(mxn)
 
         base::tryCatch(
             {
                 result <- if (!useChi) stats::fisher.test(mat) else stats::chisq.test(mat)
-                testResultSummary <- data.frame(
+                testResultSummary <- base::data.frame(
                     test_group = groupName,
                     group = base::toString(base::colnames(mxn)),
                     categories = base::toString(base::row.names(mxn)),
                     p_value = base::as.numeric(result$p.value),
-                    method = result$method
+                    additional = "N/A"
                 )
                 # Append result as a row to results
                 results <- rbind(results, testResultSummary, stringsAsFactors = FALSE)
             },
             error = function(e) {
-                testResultSummary <- data.frame(
+                testResultSummary <- base::data.frame(
                     test_group = groupName,
                     group = base::toString(base::colnames(mxn)),
                     categories = base::toString(base::colnames(mxn)),
                     p_value = NA,
-                    method = base::toString(e)
+                    additional = base::toString(e)
                 )
-                results <- rbind(results, testResultSummary, stringsAsFactors = FALSE)
+                results <- base::rbind(results, testResultSummary, stringsAsFactors = FALSE)
             }
         )
     }
-    colnames(results) <- c(
+    base::colnames(results) <- c(
         "test_group",
         "groups",
         "categories",
         "p_value",
-        "method"
+        "additional"
     )
     return(results)
 }

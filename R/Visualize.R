@@ -9,8 +9,11 @@
 #' @param variants The data.frame containing all the variant
 #' information.
 #' 
-#' @export
+#' @examples
+#' plot <- visVariantDistribution(MappedVariants)
+#' View(plot)
 #' 
+#' @export
 #' @import ggplot2
 visVariantDistribution <- function(variants) {
     greatestNVPos <- base::max(

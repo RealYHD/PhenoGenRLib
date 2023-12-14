@@ -19,8 +19,15 @@
 #' @return Returns a data.frame like object where each row is a variant and
 #' the associated metadata is attached column-wise to the right. 
 #' 
-#' @export 
+#' @examples
+#' variants <- PhenoGenRLib::linkVariantsWithMetadata(
+#'   metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
+#'   vcfDir = "inst/extdata/",
+#'   vcfColName = "vcfs"
+#' )
+#' View(variants)
 #' 
+#' @export 
 #' @importFrom readr read_csv
 #' @importFrom bedr read.vcf
 linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
@@ -74,8 +81,14 @@ linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
 #' allele frequencies in the databases. The two values are returned in a data.frame where `nvs` is the 
 #' accessor for the variants, and `rsids` is the accessor for the rsID information. 
 #' 
+#' @examples
+#' mappedVariants <- mapRsidsForVariants(
+#' chromCol = "chromosome",
+#' variants = UnmappedVariants,
+#' offset = 3074680
+#' )
+#' View(mappedVariants)
 #' @export 
-#' 
 #' 
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
     nvCoords <- coordinatesFromVariants(
@@ -97,14 +110,17 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
         batchIndex <- endIndex + 1
     }
 
-    mappedVariants <- base::merge(mappingData, rsids[c("chrom_start", "chrom_end", "refsnp_id")], by = c("chrom_start", "chrom_end"), all.x = TRUE)
+    mappedVariants <- base::merge(mappingData, rsids[base::c("chrom_start", "chrom_end", "refsnp_id")], by = base::c("chrom_start", "chrom_end"), all.x = TRUE)
     return(base::list(nvs = mappedVariants, rsids = rsids))
 }
 
+#' Convert From Coordinates to Variants
+#' 
+#' 
 coordinatesFromVariants <- function(variants, chromCol, offset = 0) {
-    queryData <- variants[c(chromCol, "POS")]
+    queryData <- variants[base::c(chromCol, "POS")]
     queryData$POS <- queryData$POS + offset
-    queryData["END"] <- queryData$POS + apply(variants["REF"], MARGIN = 1, nchar) - 1
+    queryData["END"] <- queryData$POS + base::apply(variants["REF"], MARGIN = 1, nchar) - 1
     return(queryData)
 }
 
@@ -115,8 +131,8 @@ mapRsidsForVariantPositions <- function(coordinates, hostGenVersion = 38) {
     coords <- base::apply(coordinates, 1, paste, collapse = ":")
     snpMart <- biomaRt::useEnsembl(biomart = "snps", dataset = "hsapiens_snp", host = (if (hostGenVersion == 38) "https://www.ensembl.org" else "https://grch37.ensembl.org"))
     rsids <- biomaRt::getBM(
-        attributes = c("refsnp_id", "allele", "minor_allele", "minor_allele_count", "minor_allele_freq", "chr_name", "chrom_start", "chrom_end"),
-        filters = c("chromosomal_region"),
+        attributes = base::c("refsnp_id", "allele", "minor_allele", "minor_allele_count", "minor_allele_freq", "chr_name", "chrom_start", "chrom_end"),
+        filters = base::c("chromosomal_region"),
         values = coords,
         mart = snpMart,
         uniqueRows = TRUE

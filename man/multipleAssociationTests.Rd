@@ -6,6 +6,35 @@
 \usage{
 multipleAssociationTests(mxns, useChi = FALSE, groupName = "Untitled")
 }
+\arguments{
+\item{mxns}{A list of 2x2 data frames.}
+
+\item{useChi}{Whether or not to use Chi-Square tests instead of Fisher's exact test}
+
+\item{groupName}{The name of this test group. Annotates the tests ran with this name
+in the results.}
+}
+\value{
+Returns a data.frame with columns describing the 2-way table that was used for
+the test:
+\itemize{
+\item test_group - The group the test belongs too. Often used to group based on position.
+\item groups - The names of the columns of the 2-way table tested on.
+\item categories - The names of rows of the 2-way table tested on.
+\item p_value - The resulting p-value
+\item additional - Any additional information regarding the automated test.
+}
+}
 \description{
-Performs Multiple Association Tests on Arrays of Matrices
+For a list of 2x2 data frames, this function calculates the association
+between the the individual tables categorical variables by application of
+either Fisher's exact test or Chi-Square test.
+}
+\examples{
+testResults <- multipleAssociationTests(
+  mxns = list(data.frame(A = c(1, 2, 3), B = c(1, 2, 3), row.names = c("C", "D"))),
+  groupName = "First Group"
+)
+View(testResults)
+
 }

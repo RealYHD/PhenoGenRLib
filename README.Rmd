@@ -15,23 +15,43 @@ knitr::opts_chunk$set(
 
 # PhenoGenRLib
 
+An easy way to study associations between single-nucleotide polymorphisms and phenotypic traits given a dataset of variants.
+
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of PhenoGenRLib is to simplify nucleotide variant analysis.
+---
 
-As next generational sequencing (NGS) begins taking off, more and more data is readily available to be used. Arguably, there is an overabundance of data that has yet been used to it's fullest potential. PhenoGenRLib promises to provide simple ways of loading VCFs, associating them with sample metadata, and lastly, running associative studies by applying the metadata.
+The goal of PhenoGenRLib is to simplify nucleotide variant analysis. As next generational sequencing (NGS) begins taking off, more and more data is readily available to be used. As a direct product of the growing popularity of the new machine, there is an increasing amount of data that has yet been used to it's fullest potential. 
+
+PhenoGenRLib promises to provide simple ways of loading [variant call format (VCF)](https://en.wikipedia.org/wiki/Variant_Call_Format) files, a commonly used bioinformatics file format capable of storing all forms of variants given a sequence. The format is also quite extensible capable of generalized metadata storage. linking them with sample metadata, and lastly, running associative studies by applying the metadata. Furthermore, PhenoGenRLib contains simple functions for rapidly resolving for rsIDs based of the human chromosome and position and fetching from the National Center for Biotechnology Information (NCBI) Entrez portal.
+
+The package is developed under the following environment:
+
+- R version 4.3.2 (2023-10-31)
+- Platform: x86_64-conda-linux-gnu (64-bit)
+- Running under: Ubuntu 22.04.3 LTS
 
 ## Installation
 
 You can install the development version of PhenoGenRLib like so:
 
 ``` r
+install.packages("devtools")
 require("devtools")
-devtools::install github("RealYHD/PhenoGenRLib",
-build vignettes = TRUE)
+devtools::install github("RealYHD/PhenoGenRLib", build vignettes = TRUE)
 library("PhenoGenRLib")
 ```
+
+To run the shiny app:
+
+``` r
+runPhenoGenRLib()
+```
+
+## Overview
+
+<!-- TODO -->
 
 ## Getting Started
 

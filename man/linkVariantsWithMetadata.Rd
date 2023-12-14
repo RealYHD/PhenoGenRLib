@@ -30,3 +30,12 @@ same row, contain the associated metadata with that VCF. Then,
 it looks inside \code{vcfDir} for the VCF filenames as they appear in the
 CSV.
 }
+\examples{
+variants <- PhenoGenRLib::linkVariantsWithMetadata(
+  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
+  vcfDir = "inst/extdata/",
+  vcfColName = "vcfs"
+)
+View(variants)
+
+}
