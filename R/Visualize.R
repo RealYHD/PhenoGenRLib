@@ -1,4 +1,4 @@
-#' Visualize Variant Distribution
+#' Visualize Variant Heat Map
 #'
 #' Sometimes, it may be beneficial to know approximately which
 #' genomic regions have the most detected variants relative to
@@ -6,37 +6,31 @@
 #' depicting the positions on the horizontal axis and the number
 #' of variants on the vertical axis.
 #'
-#' @param variants The data.frame containing all the variant
-#' information.
+#' @param heatmap The data frame containing the variant distribution of the
+#' various nucleotides at each positions.
+#'
+#' @param nucbase The nucleotides to graph. Can be any combination of
+#' "A", "T", "C", or "G".
 #'
 #' @examples
-#' plot <- visVariantDistribution(MappedVariants)
+#' plot <- visVariantHeatMap(heatmap)
 #' View(plot)
 #'
 #' @export
 #' @import ggplot2
-visVariantDistribution <- function(variants) {
-  greatestNVPos <- base::max(
-    variants$POS + base::apply(variants["REF"], MARGIN = 1, base::nchar)
-  ) # Find the largest variant position
-  smallestNVPos <- min(variants$POS) # find the smllest variant position
-  caseOccurrences <- base::vector(
-    mode = "integer",
-    length = greatestNVPos - smallestNVPos) # Generate vector of 0s
-  for (row in 1:base::nrow(variants)) {
-    variant <- variants[row,]
-    start <- variant[["POS"]] - smallestNVPos
-    end <- start + base::nchar(variant[["REF"]]) - 1
-    caseOccurrences[start:end] <- caseOccurrences[start:end] + 1
-  }
-  positions <- smallestNVPos:(greatestNVPos - 1)
-  distribution <- base::data.frame(positions, caseOccurrences)
+visVariantHeatMap <- function(heatmap, nucbases) {
+  refColNames <- base::paste("ref", nucbases, sep = "")
+  altColNames <- base::paste("alt", nucbases, sep = "")
+  distribution <- data.frame(
+    refs = rowSums(heatmap[refColNames]),
+    alts = rowSums(heatmap[altColNames])
+  )
 
-  plot <- ggplot2::ggplot(distribution, aes(x = positions, y = caseOccurrences)) +
-    ggplot2::geom_bar(stat = "identity", fill = "red", width = 1) +
-    ggplot2::geom_point(size = 2, colour = "red") +
-    ggplot2::labs(x = "Position", y = "Occurrences", title = "Distribution of Occurrences") +
-    ggplot2::theme(aspect.ratio = 1/2)
-
+  ggplot2::ggplot(data = distribution) +
+    ggplot2::geom_line(aes(x = as.numeric(row.names(distribution)), y = refs), colour = "blue", alpha = 0.6) +
+    ggplot2::geom_point(aes(x = as.numeric(row.names(distribution)), y = refs), colour = "blue", alpha = 0.6) +
+    ggplot2::geom_line(aes(x = as.numeric(row.names(distribution)), y = alts), colour = "red", alpha = 0.6) +
+    ggplot2::geom_point(aes(x = as.numeric(row.names(distribution)), y = alts), colour = "red", alpha = 0.6) +
+    ggplot2::labs(x = "Position", y = "Frequency")
   return(plot)
 }

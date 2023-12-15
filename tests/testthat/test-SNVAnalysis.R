@@ -59,3 +59,9 @@ test_that("case control with ensembl database as control results not changed", {
   testthat::expect_s3_class(results, "data.frame")
   testthat::expect_snapshot(results)
 })
+
+testthat::test_that("generation of positional heatmap results not changed", {
+  results <- PhenoGenRLib:::generatePositionHeatmap(variants = MappedVariants)
+  testthat::expect_s3_class(results, "data.frame")
+  testthat::expect_snapshot(results)
+})

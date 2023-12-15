@@ -279,6 +279,78 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
   return(results)
 }
 
-generatePositionHeatmap <- function(variants, offset) {
 
+#' Generates a vector of NV Occurrences
+#'
+#' Takes a data frame of known nucleotides variants and counts their occurrences
+#' on different positions. Groups ocurrences based on the variant allele.
+#'
+generatePositionHeatmap <- function(variants) {
+  greatestNVPos <- base::max(
+    variants$POS + base::max(
+      base::apply(variants["REF"], MARGIN = 1, base::nchar), # Accounts for MNVs
+      base::apply(variants["ALT"], MARGIN = 1, base::nchar)
+    )
+  ) # Find the largest variant position
+  smallestNVPos <- min(variants$POS) # find the smallest variant position
+  varianceRegionLength <- greatestNVPos - smallestNVPos + 1
+  occurrences <- data.frame(
+    altA = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    altT = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    altC = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    altG = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    refA = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    refT = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    refC = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    refG = base::vector(
+      mode = "integer",
+      length = varianceRegionLength
+    ),
+    row.names = smallestNVPos:greatestNVPos
+  )
+  for (row in 1:base::nrow(variants)) {
+    variant <- variants[row,]
+    start <- variant[["POS"]] - smallestNVPos
+    end <- start + base::nchar(variant[["REF"]]) - 1
+
+    for (relPos in 1:base::nchar(variant[["REF"]])) {
+      baseType <- base::substring(variant[["REF"]], relPos, relPos)
+      pos <- start + relPos - 1 # because relPos starts at 1.
+      colName <- paste("ref", baseType, sep = "")
+      occurrences[pos, colName] <- occurrences[pos, colName] + 1
+    }
+
+    # Account for multiple variants
+    for (variantSeq in base::unlist(stringr::str_split(variant[["ALT"]], pattern = ","))) {
+      for (relPos in 1:base::nchar(variantSeq)) {
+        baseType <- base::substring(variantSeq, relPos, relPos)
+        pos <- start + relPos - 1
+        colName <- paste("alt", baseType, sep = "")
+        occurrences[pos, colName] <- occurrences[pos, colName] + 1
+      }
+    }
+  }
+  return(occurrences)
 }
+
