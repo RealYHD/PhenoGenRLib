@@ -41,20 +41,30 @@ testthat::test_that("Verify the multiple tests for correlation function returns 
       groups = c("C1, C2", "C1, C2"),
       categories = c("R1, R2", "R1, R3"),
       p_value = c(0.37967, 0.01164),
-      method = c(
-        "Fisher's Exact Test for Count Data",
-        "Fisher's Exact Test for Count Data"
+      additional = c(
+        "N/A",
+        "N/A"
       )
     ),
     tolerance = 1.0e-4
   )
 })
 
-test_that("case control with ensembl database as control results not changed", {
+testthat::test_that("case control with ensembl database as control results not changed", {
   results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
     MappedVariants,
     RsIDs,
     totalCaseSamples = 8
+  )
+  testthat::expect_s3_class(results, "data.frame")
+  testthat::expect_snapshot(results)
+})
+
+testthat::test_that("case control with phenotype results not changed", {
+  results <- PhenoGenRLib::varianceCCAnalysisPheno(
+    variants = HuntingtonsVariants,
+    totalCaseSamples = 8,
+    phenotypeName = "dummy_pheno"
   )
   testthat::expect_s3_class(results, "data.frame")
   testthat::expect_snapshot(results)
@@ -65,3 +75,5 @@ testthat::test_that("generation of positional heatmap results not changed", {
   testthat::expect_s3_class(results, "data.frame")
   testthat::expect_snapshot(results)
 })
+
+# [END]

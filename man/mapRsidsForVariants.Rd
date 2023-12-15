@@ -9,7 +9,8 @@ mapRsidsForVariants(
   variants,
   offset = 0,
   hostGenVersion = 38,
-  batchSize = 100
+  batchSize = 100,
+  progress = NULL
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ and 37 (GRCh37). Default is 38.}
 
 \item{batchSize}{The number coordinates to send to Ensembl servers at once. Smaller batches
 may reduce chances of timing out. Default is 100.}
+
+\item{progress}{A function to call each iteration to track progress. The
+function should accept two numeric parameters, one representing the current
+iteration, and the second representing the total number of iterations.}
 }
 \value{
 Returns variant data.frame containing all pre-existing information (including metadata and
@@ -46,10 +51,12 @@ added column-wise to each of the variants in the original data.frame. This
 updated data.frame is what is returned.
 }
 \examples{
+
 mappedVariants <- mapRsidsForVariants(
 chromCol = "chromosome",
-variants = UnmappedVariants,
+variants = huntingtonsVariants,
 offset = 3074680
 )
-View(mappedVariants)
+# Use View(mappedVariants$nvs) to see the variants and their mappings
+# Use View(mappedVariants$rsids) to see just the RSID information
 }

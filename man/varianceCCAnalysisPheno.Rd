@@ -37,3 +37,14 @@ the name of a column from the metadata used to load the VCFs is taken.
 The function then finds all possible categorical values for the column
 and built pairwise tables based off these.
 }
+\examples{
+
+results <- PhenoGenRLib::varianceCCAnalysisPheno(
+  variants = HuntingtonsVariants,
+  totalCaseSamples = 8,
+  phenotypeName = "dummy_pheno"
+)
+
+# Use View(results) to see the produced data frame.
+
+}

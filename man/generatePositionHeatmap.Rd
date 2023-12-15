@@ -16,10 +16,10 @@ Takes a data frame of known nucleotides variants and counts their occurrences
 on different positions. Groups occurrences based on the variant allele.
 }
 \examples{
-heatmap <- PhenoGenRLib::generatePositionHeatmap(UnmappedVariants)
-View(heatmap)
+heatmap <- PhenoGenRLib::generatePositionHeatmap(huntingtonsVariants)
+# Use View(heatmap) to look at the dataset.
 
 }
 \seealso{
-\link{linkVariantsWithMetadata}
+\code{\link[=linkVariantsWithMetadata]{linkVariantsWithMetadata()}}
 }

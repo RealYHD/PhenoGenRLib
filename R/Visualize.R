@@ -13,8 +13,9 @@
 #' "A", "T", "C", or "G".
 #'
 #' @examples
-#' plot <- visVariantHeatMap(heatmap)
-#' View(plot)
+#'
+#' plot <- visVariantHeatMap(huntingtonsVariantsHeatmap, nucbases = c("A", "T"))
+#' # This is a ggplot2 plot
 #'
 #' @export
 #' @import ggplot2
@@ -34,3 +35,6 @@ visVariantHeatMap <- function(heatmap, nucbases) {
     ggplot2::labs(x = "Position", y = "Frequency")
   return(plot)
 }
+
+
+# [END]

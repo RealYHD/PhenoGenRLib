@@ -20,6 +20,16 @@
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
 #' employed for each test.
 #'
+#' @examples
+#'
+#' results <- PhenoGenRLib::varianceCCAnalysisPheno(
+#'   variants = HuntingtonsVariants,
+#'   totalCaseSamples = 8,
+#'   phenotypeName = "dummy_pheno"
+#' )
+#'
+#' # Use View(results) to see the produced data frame.
+#'
 #' @export
 varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, useChi = FALSE) {
   if (!base::is.data.frame(variants)) {
@@ -28,7 +38,7 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
   if (!base::is.numeric(totalCaseSamples)) {
     base::stop("The total number of case samples should be numeric.")
   }
-  if (! phenotypeName %in% variants) {
+  if (!(phenotypeName %in% colnames(variants))) {
     base::stop("The name of the phenotype must be a column in the variants data frame.")
   }
   if (!base::is.logical(useChi)) {
@@ -36,10 +46,17 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
   }
 
   phenotypes <- base::unique(variants[[phenotypeName]])
-  uniqueRsids <- base::unique(variants[["refsnp_id"]])
-  results <- NULL
-  for (rsid in uniqueRsids) {
-    rsidVariants <- variants[which(variants["refsnp_id"]==rsid),]
+  uniqueIds <- base::unique(variants[["local_id"]])
+  results <- base::data.frame(base::matrix(ncol = 5, nrow = 0))
+  base::colnames(results) <- c(
+    "test_group",
+    "groups",
+    "categories",
+    "p_value",
+    "additional"
+  )
+  for (id in uniqueIds) {
+    rsidVariants <- variants[which(variants["local_id"]==id),]
     refAllele <- rsidVariants[[1, "REF"]]
     allAlleles <- base::unique(c(
       refAllele,
@@ -62,13 +79,16 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
     }
     row.names(freqMatrix) <- allAlleles
     colnames(freqMatrix) <- phenotypes
-    results <- multipleAssociationTests(
+    freqMatrix <- base::as.data.frame(freqMatrix)
+    assocResults <- multipleAssociationTests(
       generate2WayFromMxN(freqMatrix),
       useChi = useChi,
-      groupName = rsid
+      groupName = id
     )
+
+    results <- base::rbind(results, assocResults, stringsAsFactors = FALSE)
   }
-  results <- if (base::is.nan(results)) result else base::rbind(results, result)
+  return(results)
 }
 
 
@@ -95,10 +115,20 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' Default is FALSE.
 #'
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
-#' employed for each test. The structure is that of
+#' employed for each test. The structure is that of the multiple associations test function.
 #' @seealso PhenoGenRLib::MultipleAssociationTests
 #'
 #' @export
+#'
+#' @examples
+#'
+#' results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
+#'   mappedHuntingtonsVariants,
+#'   RsIDs,
+#'   totalCaseSamples = 8
+#' )
+#'
+#' # Use View(reslts) to look at the associations and their P-Values
 #'
 #' @importFrom dplyr distinct
 #' @importFrom stringr str_split
@@ -251,25 +281,26 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
 
   results <- base::data.frame(base::matrix(ncol = 5, nrow = 0))
   for (mxn in mxns) {
-    mat <- base::as.matrix(mxn)
+    mat <- base::matrix(base::unlist(mxn), nrow = 2, ncol = 2)
 
-    base::tryCatch(
+    testResults <- base::tryCatch(
       {
         result <- if (!useChi) stats::fisher.test(mat) else stats::chisq.test(mat)
         testResultSummary <- base::data.frame(
           test_group = groupName,
-          group = base::toString(base::colnames(mxn)),
+          groups = base::toString(base::colnames(mxn)),
           categories = base::toString(base::row.names(mxn)),
           p_value = base::as.numeric(result$p.value),
           additional = "N/A"
         )
         # Append result as a row to results
+
         results <- rbind(results, testResultSummary, stringsAsFactors = FALSE)
       },
       error = function(e) {
         testResultSummary <- base::data.frame(
           test_group = groupName,
-          group = base::toString(base::colnames(mxn)),
+          groups = base::toString(base::colnames(mxn)),
           categories = base::toString(base::colnames(mxn)),
           p_value = NA,
           additional = base::toString(e)
@@ -299,10 +330,10 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
 #' via linkVariantsWithMetadata.
 #'
 #' @examples
-#' heatmap <- PhenoGenRLib::generatePositionHeatmap(UnmappedVariants)
-#' View(heatmap)
+#' heatmap <- PhenoGenRLib::generatePositionHeatmap(huntingtonsVariants)
+#' # Use View(heatmap) to look at the dataset.
 #'
-#' @seealso [linkVariantsWithMetadata]
+#' @seealso [PhenoGenRLib::linkVariantsWithMetadata()]
 #'
 #'@export
 #'

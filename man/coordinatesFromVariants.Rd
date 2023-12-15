@@ -7,5 +7,5 @@
 coordinatesFromVariants(variants, chromCol, offset = 0)
 }
 \description{
-Convert From Coordinates to Variants
+Helper function for rapidly performing vectorized variant positional calculations.
 }

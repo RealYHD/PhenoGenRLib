@@ -7,5 +7,5 @@
 mapRsidsForVariantPositions(coordinates, hostGenVersion = 38)
 }
 \description{
-Maps RSIDs based on Variant Positions
+Helper function for fetching RSIDs based off set of specific coordinates
 }

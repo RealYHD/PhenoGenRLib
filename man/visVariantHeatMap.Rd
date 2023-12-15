@@ -21,7 +21,8 @@ depicting the positions on the horizontal axis and the number
 of variants on the vertical axis.
 }
 \examples{
-plot <- visVariantHeatMap(heatmap)
-View(plot)
+
+plot <- visVariantHeatMap(huntingtonsVariantsHeatmap, nucbases = c("A", "T"))
+# This is a ggplot2 plot
 
 }

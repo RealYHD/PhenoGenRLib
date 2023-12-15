@@ -1,0 +1,13 @@
+citHeader("To cite PhenoGenRLib in publications use:")
+
+citEntry(entry = "Unpublished",
+  title        = "PhenoGenRLib: An Easy Way to Study Associations Between
+  Variants and Phenotypes",
+  author       = "Harrison Deng",
+  note         = "Unpublished",
+  year         = "2023",
+
+  textVersion  =
+  paste("Deng, H. (2023) PhenoGenRLib: An Easy Way to Study Associations Between Variants and Phenotypes.
+        Unpublished. URL https://github.com/RealYHD/PhenoGenRLib.")
+)

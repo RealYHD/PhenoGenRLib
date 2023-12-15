@@ -4,7 +4,13 @@
 \alias{varianceCCAnalysisEnsembl}
 \title{Variance Case-Control Analysis where the Ensembl Database is the Control}
 \usage{
-varianceCCAnalysisEnsembl(variants, rsids, totalCaseSamples, useChi = FALSE)
+varianceCCAnalysisEnsembl(
+  variants,
+  rsids,
+  totalCaseSamples,
+  useChi = FALSE,
+  progress = NULL
+)
 }
 \arguments{
 \item{variants}{The data.frame containing all the variants, variant information, and rsIDs.}
@@ -20,7 +26,7 @@ Default is FALSE.}
 }
 \value{
 A data.frame containing all the p-values and the shape of the 2-way table
-employed for each test. The structure is that of
+employed for each test. The structure is that of the multiple associations test function.
 }
 \description{
 This function makes it easy to test for potential associations between the
@@ -34,6 +40,17 @@ contrast to various other tests. It is more computational intensive however. Hen
 this function also allows the use of the chi-square test. The table formed is between
 whether or not the position is mutated, and whether or not the mutation occurred in a
 healthy individual (the control group), or the case study individual.
+}
+\examples{
+
+results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
+  mappedHuntingtonsVariants,
+  RsIDs,
+  totalCaseSamples = 8
+)
+
+# Use View(reslts) to look at the associations and their P-Values
+
 }
 \seealso{
 PhenoGenRLib::MultipleAssociationTests

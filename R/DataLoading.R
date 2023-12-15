@@ -23,12 +23,14 @@
 #' the associated metadata is attached column-wise to the right.
 #'
 #' @examples
+#'
 #' variants <- PhenoGenRLib::linkVariantsWithMetadata(
-#'   metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
-#'   vcfDir = "inst/extdata/",
+#'   metadata = system.file("extdata/huntingtons_datasheet_shortened.csv",
+#'     package = "PhenoGenRLib"),
+#'   vcfDir = system.file("extdata/", package = "PhenoGenRLib"),
 #'   vcfColName = "vcfs"
 #' )
-#' View(variants)
+#' # Use View(variants) to see results!
 #'
 #' @export
 #' @importFrom readr read_csv
@@ -38,7 +40,7 @@ linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progre
   if (is.data.frame(metadata)) {
     # Nothing
   } else if (is.character(metadata)) {
-    metadata <- readr::read_csv(metadata)
+    metadata <- readr::read_csv(metadata, show_col_types = FALSE)
   } else {
     base::stop("Metadata must be either data frame or path to CSV.")
   }
@@ -119,12 +121,14 @@ linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progre
 #' accessor for the variants, and `rsids` is the accessor for the rsID information.
 #'
 #' @examples
+#'
 #' mappedVariants <- mapRsidsForVariants(
 #' chromCol = "chromosome",
-#' variants = UnmappedVariants,
+#' variants = huntingtonsVariants,
 #' offset = 3074680
 #' )
-#' View(mappedVariants)
+#' # Use View(mappedVariants$nvs) to see the variants and their mappings
+#' # Use View(mappedVariants$rsids) to see just the RSID information
 #' @export
 #'
 mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100, progress = NULL) {
@@ -152,12 +156,17 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
     batchIndex <- endIndex + 1
   }
 
-  mappedVariants <- base::merge(mappingData, rsids[base::c("chrom_start", "chrom_end", "refsnp_id")], by = base::c("chrom_start", "chrom_end"), all.x = TRUE)
+  mappedVariants <- base::merge(
+    mappingData,
+    rsids[base::c("chrom_start", "chrom_end", "refsnp_id")],
+    by = base::c("chrom_start", "chrom_end"), all.x = TRUE
+  )
   return(base::list(nvs = mappedVariants, rsids = rsids))
 }
 
 #' Convert From Coordinates to Variants
 #'
+#' Helper function for rapidly performing vectorized variant positional calculations.
 #'
 coordinatesFromVariants <- function(variants, chromCol, offset = 0) {
   queryData <- variants[base::c(chromCol, "POS")]
@@ -168,12 +177,26 @@ coordinatesFromVariants <- function(variants, chromCol, offset = 0) {
 
 #' Maps RSIDs based on Variant Positions
 #'
+#' Helper function for fetching RSIDs based off set of specific coordinates
+#'
 #' @importFrom biomaRt useEnsembl getBM
 mapRsidsForVariantPositions <- function(coordinates, hostGenVersion = 38) {
   coords <- base::apply(coordinates, 1, paste, collapse = ":")
-  snpMart <- biomaRt::useEnsembl(biomart = "snps", dataset = "hsapiens_snp", host = (if (hostGenVersion == 38) "https://www.ensembl.org" else "https://grch37.ensembl.org"))
+  snpMart <- biomaRt::useEnsembl(
+    biomart = "snps",
+    dataset = "hsapiens_snp",
+    host = (if (hostGenVersion == 38) "https://www.ensembl.org" else "https://grch37.ensembl.org"))
   rsids <- biomaRt::getBM(
-    attributes = base::c("refsnp_id", "allele", "minor_allele", "minor_allele_count", "minor_allele_freq", "chr_name", "chrom_start", "chrom_end"),
+    attributes = base::c(
+      "refsnp_id",
+      "allele",
+      "minor_allele",
+      "minor_allele_count",
+      "minor_allele_freq",
+      "chr_name",
+      "chrom_start",
+      "chrom_end"
+    ),
     filters = base::c("chromosomal_region"),
     values = coords,
     mart = snpMart,
@@ -181,3 +204,5 @@ mapRsidsForVariantPositions <- function(coordinates, hostGenVersion = 38) {
   )
   return(rsids)
 }
+
+# [END]

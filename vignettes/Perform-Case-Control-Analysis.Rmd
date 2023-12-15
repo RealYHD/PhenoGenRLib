@@ -24,8 +24,9 @@ library(PhenoGenRLib)
 
 ```{r load}
 nvs <- PhenoGenRLib::linkVariantsWithMetadata(
-  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
-  vcfDir = "inst/extdata/",
+  metadata = system.file("extdata/huntingtons_datasheet_shortened.csv",
+                         package = "PhenoGenRLib"),
+  vcfDir = system.file("extdata/", package = "PhenoGenRLib"),
   vcfColName = "vcfs"
 )
 
@@ -34,7 +35,7 @@ nvs <- PhenoGenRLib::linkVariantsWithMetadata(
 
 2. This may be useful to use by itself it we were analyzing some specific phenotype we already annotated in the metadata, but for now, we're going to need to extend our dataset by fetching from the Ensembl database. To do this, we'll need rsIDs for as many of our variants as possible. Thus:
 
-```{r annotate}
+```{r Annotate}
 mappings <- PhenoGenRLib::mapRsidsForVariants(
   "chromosome",
   variants = UnmappedVariants,
@@ -46,9 +47,9 @@ Few things to note: We passed in the string `chromosome` to tell the function wh
 
 3. Lastly, let's assume that the VCFs were generated from patients with disease X. We want to know if any of the nucleotide variations are associated statistically with disease X. To do this, we'll compare the frequency of mutations from our hypothetically sick patients, to those that are healthy (Ensembl database).
 
-```{r analysis, eval=FALSE}
+```{r analysis}
 analysis <- PhenoGenRLib::varianceCCAnalysisEnsembl(
-  nvs,
+  mappings$nvs,
   mappings$rsids,
   totalCaseSamples = 8
 )

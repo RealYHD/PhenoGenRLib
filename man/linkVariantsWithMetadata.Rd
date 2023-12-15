@@ -35,11 +35,13 @@ it looks inside \code{vcfDir} for the VCF filenames as they appear in the
 CSV.
 }
 \examples{
+
 variants <- PhenoGenRLib::linkVariantsWithMetadata(
-  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
-  vcfDir = "inst/extdata/",
+  metadata = system.file("extdata/huntingtons_datasheet_shortened.csv",
+    package = "PhenoGenRLib"),
+  vcfDir = system.file("extdata/", package = "PhenoGenRLib"),
   vcfColName = "vcfs"
 )
-View(variants)
+# Use View(variants) to see results!
 
 }
