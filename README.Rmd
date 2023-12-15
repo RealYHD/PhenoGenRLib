@@ -53,20 +53,6 @@ runPhenoGenRLib()
 
 <!-- TODO -->
 
-## Getting Started
-
-To get started, have a datasheet ready in the form of a `CSV`. This datasheet should at the very least, contain one column, where each row in that column contains the filename of the VCF including the `.vcf`. For the following example, we will assume that such a file is called `huntingtons_datasheet_shortened.csv` and is located at `./inst/extdata/huntingtons_datasheet_shortened.csv` with the column containing the VCF filenames being named `vcfs`. We will also need the location of the VCFs. Let's assume they can be found at the same place as the metadata CSV `./inst/extdata/`. Then:
-
-```{r example}
-library(PhenoGenRLib)
-variants <- PhenoGenRLib::linkVariantsWithMetadata(
-  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
-  vcfDir = "inst/extdata/",
-  vcfColName = "vcfs"
-)
-```
-
-Checkout the documents and vignettes for where to go from here!
 
 # Contributions
 
@@ -109,3 +95,20 @@ Wickham H, Hester J, Bryan J (2023). _readr: Read Rectangular Text
 # Acknowledgements
 
 This package was developed as part of an assessment for 2023 BCB410H: Applied Bioinformatics course at the University of Toronto, Toronto, CANADA. PhenoGenRLib welcomes issues, enhancement requests, and other contributions. To submit an issue, use the GitHub issues.
+
+
+
+## Getting Started
+
+To get started, have a datasheet ready in the form of a `CSV`. This datasheet should at the very least, contain one column, where each row in that column contains the filename of the VCF including the `.vcf`. For the following example, we will assume that such a file is called `huntingtons_datasheet_shortened.csv` and is located at `./inst/extdata/huntingtons_datasheet_shortened.csv` with the column containing the VCF filenames being named `vcfs`. We will also need the location of the VCFs. Let's assume they can be found at the same place as the metadata CSV `./inst/extdata/`. Then:
+
+```{r example}
+library(PhenoGenRLib)
+variants <- PhenoGenRLib::linkVariantsWithMetadata(
+  metadata = "inst/extdata/huntingtons_datasheet_shortened.csv",
+  vcfDir = "inst/extdata/",
+  vcfColName = "vcfs"
+)
+```
+
+Checkout the documents and vignettes for where to go from here!
