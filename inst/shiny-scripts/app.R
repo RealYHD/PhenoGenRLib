@@ -102,7 +102,13 @@ server <- function(input, output) {
         }
       )
     } else {
-      stop(base::paste("No column named \"", input$variantsMetadataVCFCol, "\" found in: ", list(base::colnames(metadata()))), sep = "")
+      stop(base::paste(
+        "No column named \"",
+        input$variantsMetadataVCFCol,
+        "\" found in: ",
+        list(base::colnames(metadata()))),
+        sep = ""
+      )
     }
     return(metadata)
   })
@@ -129,18 +135,29 @@ server <- function(input, output) {
     shiny::req(input$posOffset)
     shiny::req(input$hgVersion)
 
-    shiny::withProgress(message = "Mapping RSIDs", {
-      mappedVariants <- PhenoGenRLib::mapRsidsForVariants(
-        chromCol = input$chromCol,
-        variants = variants(),
-        offset = input$posOffset,
-        hostGenVersion = input$hgVersion,
-        progress = function(it, total) {
-          shiny::setProgress(value = it/total)
-        }
+    if (input$chromCol %in% colnames(variants())) {
+      shiny::withProgress(message = "Mapping RSIDs", {
+        mappedVariants <- PhenoGenRLib::mapRsidsForVariants(
+          chromCol = input$chromCol,
+          variants = variants(),
+          offset = input$posOffset,
+          hostGenVersion = input$hgVersion,
+          progress = function(it, total) {
+            shiny::setProgress(value = it/total)
+          }
+        )
+        return(mappedVariants)
+      })
+    } else {
+      stop(base::paste(
+        "No column named \"",
+        input$chromCol,
+        "\" found in: ",
+        list(base::colnames(metadata()))),
+        sep = ""
       )
-      return(mappedVariants)
-    })
+    }
+
   })
 
   heatmap <- shiny::reactive({
