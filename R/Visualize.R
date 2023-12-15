@@ -26,7 +26,7 @@ visVariantHeatMap <- function(heatmap, nucbases) {
     alts = rowSums(heatmap[altColNames])
   )
 
-  ggplot2::ggplot(data = distribution) +
+  plot <- ggplot2::ggplot(data = distribution) +
     ggplot2::geom_line(aes(x = as.numeric(row.names(distribution)), y = refs), colour = "blue", alpha = 0.6) +
     ggplot2::geom_point(aes(x = as.numeric(row.names(distribution)), y = refs), colour = "blue", alpha = 0.6) +
     ggplot2::geom_line(aes(x = as.numeric(row.names(distribution)), y = alts), colour = "red", alpha = 0.6) +

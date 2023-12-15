@@ -283,7 +283,19 @@ multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled
 #' Generates a vector of NV Occurrences
 #'
 #' Takes a data frame of known nucleotides variants and counts their occurrences
-#' on different positions. Groups ocurrences based on the variant allele.
+#' on different positions. Groups occurrences based on the variant allele.
+#'
+#' @param variants A data frame containing the variants with ALT and REF columns
+#' in the format that exists in VCFs. Typical usage employs loading this data
+#' via linkVariantsWithMetadata.
+#'
+#' @examples
+#' heatmap <- PhenoGenRLib::generatePositionHeatmap(UnmappedVariants)
+#' View(heatmap)
+#'
+#' @seealso [linkVariantsWithMetadata]
+#'
+#'@export
 #'
 generatePositionHeatmap <- function(variants) {
   greatestNVPos <- base::max(

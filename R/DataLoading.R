@@ -8,13 +8,16 @@
 #' it looks inside `vcfDir` for the VCF filenames as they appear in the
 #' CSV.
 #'
-#' @param metadataFile A path to the metadata file in the CSV format. This
-#' file must at the very least, contain one column which lists the various
-#' VCF's filenames. For each filename, associated metadata should appear
+#' @param metadata A path to the metadata file in the CSV format or a data frame
+#' . This file must at the very least, contain one column which lists the
+#' various VCF's filenames. For each filename, associated metadata should appear
 #' on the same row.
 #' @param vcfDir A path to the directory containing the VCFs. The previously
 #' mentioned filenames will be appended in a smart manner to from the full path.
 #' @param vcfColName The name of the column containing the VCF files.
+#' @param progress A function to call each iteration to track progress. The
+#' function should accept two numeric parameters, one representing the current
+#' iteration, and the second representing the total number of iterations.
 #'
 #' @return Returns a data.frame like object where each row is a variant and
 #' the associated metadata is attached column-wise to the right.
@@ -30,13 +33,35 @@
 #' @export
 #' @importFrom readr read_csv
 #' @importFrom bedr read.vcf
-linkVariantsWithMetadata <- function(metadataFile, vcfDir, vcfColName) {
-  metadata <- readr::read_csv(metadataFile)
+linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progress = NULL) {
+  if (is.data.frame(metadata)) {
+    # Nothing
+  } else if (is.character(metadata)) {
+    metadata <- readr::read_csv(metadataFile)
+  } else {
+    base::stop("Metadata must be either data frame or path to CSV.")
+  }
+
   variantData <- NULL
   for(i in 1:nrow(metadata)) {
+    if (is.null(progress)) {
+      # do nothing
+    } else {
+      progress(i, nrow(metadata))
+    }
     metadataRow <- metadata[i,]
-    vcfFile <- base::normalizePath(base::file.path(vcfDir, metadataRow[vcfColName]))
-    vcfs <- bedr::read.vcf(vcfFile, split.info= TRUE, split.samples = TRUE)
+    vcfFile <- base::unlist(metadataRow[[vcfColName]])
+    if (is.null(vcfDir) || base::nchar(vcfDir) == 0) {
+      vcfFile <- base::normalizePath(vcfFile)
+    } else {
+      vcfFile <- base::normalizePath(base::file.path(vcfDir, vcfFile))
+    }
+    if (file.exists(vcfFile)) {
+      # Nothing
+    } else {
+      stop("Could not find some of the VCFs.")
+    }
+    vcfs <- bedr::read.vcf(vcfFile, split.info = TRUE, split.samples = TRUE)
     header <- vcfs[[1]]
     vcfs <- vcfs[2:length(vcfs)]
     for (vcf in vcfs) {

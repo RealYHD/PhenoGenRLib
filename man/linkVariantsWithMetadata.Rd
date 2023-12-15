@@ -4,18 +4,22 @@
 \alias{linkVariantsWithMetadata}
 \title{Link Existing VCF files with Metadata}
 \usage{
-linkVariantsWithMetadata(metadataFile, vcfDir, vcfColName)
+linkVariantsWithMetadata(metadata, vcfColName, vcfDir = NULL, progress = NULL)
 }
 \arguments{
-\item{metadataFile}{A path to the metadata file in the CSV format. This
-file must at the very least, contain one column which lists the various
-VCF's filenames. For each filename, associated metadata should appear
+\item{metadata}{A path to the metadata file in the CSV format or a data frame
+. This file must at the very least, contain one column which lists the
+various VCF's filenames. For each filename, associated metadata should appear
 on the same row.}
+
+\item{vcfColName}{The name of the column containing the VCF files.}
 
 \item{vcfDir}{A path to the directory containing the VCFs. The previously
 mentioned filenames will be appended in a smart manner to from the full path.}
 
-\item{vcfColName}{The name of the column containing the VCF files.}
+\item{progress}{A function to call each iteration to track progress. The
+function should accept two numeric parameters, one representing the current
+iteration, and the second representing the total number of iterations.}
 }
 \value{
 Returns a data.frame like object where each row is a variant and

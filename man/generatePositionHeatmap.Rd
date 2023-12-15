@@ -6,7 +6,20 @@
 \usage{
 generatePositionHeatmap(variants)
 }
+\arguments{
+\item{variants}{A data frame containing the variants with ALT and REF columns
+in the format that exists in VCFs. Typical usage employs loading this data
+via linkVariantsWithMetadata.}
+}
 \description{
 Takes a data frame of known nucleotides variants and counts their occurrences
-on different positions. Groups ocurrences based on the variant allele.
+on different positions. Groups occurrences based on the variant allele.
+}
+\examples{
+heatmap <- PhenoGenRLib::generatePositionHeatmap(UnmappedVariants)
+View(heatmap)
+
+}
+\seealso{
+\link{linkVariantsWithMetadata}
 }
