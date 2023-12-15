@@ -136,7 +136,7 @@ server <- function(input, output) {
     shiny::req(input$hgVersion)
 
     if (input$chromCol %in% colnames(variants())) {
-      shiny::withProgress(message = "Mapping RSIDs", {
+      shiny::withProgress(message = "Mapping RSIDs (may take a while)", {
         mappedVariants <- PhenoGenRLib::mapRsidsForVariants(
           chromCol = input$chromCol,
           variants = variants(),
