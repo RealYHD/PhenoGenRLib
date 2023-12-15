@@ -23,7 +23,7 @@
 #' @examples
 #'
 #' results <- PhenoGenRLib::varianceCCAnalysisPheno(
-#'   variants = HuntingtonsVariants,
+#'   variants = huntingtonsVariants,
 #'   totalCaseSamples = 8,
 #'   phenotypeName = "dummy_pheno"
 #' )
@@ -113,6 +113,9 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' in the metadata file as each row represents one case, hence, one VCF.
 #' @param useChi Instead of using Fisher's exact test, the chi-square test will be employed.
 #' Default is FALSE.
+#' @param progress A function to call each iteration to track progress. The
+#' function should accept two numeric parameters, one representing the current
+#' iteration, and the second representing the total number of iterations.
 #'
 #' @return A data.frame containing all the p-values and the shape of the 2-way table
 #' employed for each test. The structure is that of the multiple associations test function.
@@ -123,8 +126,8 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #' @examples
 #'
 #' results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
-#'   mappedHuntingtonsVariants,
-#'   RsIDs,
+#'   mappedHuntingtonsVariants$nvs,
+#'   mappedHuntingtonsVariants$rsids,
 #'   totalCaseSamples = 8
 #' )
 #'
@@ -264,11 +267,14 @@ generate2WayFromMxN <- function(mxn) {
 #' }
 #'
 #' @examples
-#' testResults <- multipleAssociationTests(
-#'   mxns = list(data.frame(A = c(1, 2, 3), B = c(1, 2, 3), row.names = c("C", "D"))),
-#'   groupName = "First Group"
+#'
+#' results <- PhenoGenRLib::multipleAssociationTests(
+#'   list(
+#'     data.frame(C1 = c(1,2), C2 = c(4,28), row.names = c("R1", "R2")),
+#'     data.frame(C1 = c(4,2), C2 = c(4,28), row.names = c("R1", "R3"))
+#'   )
 #' )
-#' View(testResults)
+#' # Use View(testResults) to see results!
 #'
 #' @export
 multipleAssociationTests <- function(mxns, useChi = FALSE, groupName = "Untitled") {

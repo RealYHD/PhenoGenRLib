@@ -52,8 +52,8 @@ testthat::test_that("Verify the multiple tests for correlation function returns 
 
 testthat::test_that("case control with ensembl database as control results not changed", {
   results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
-    MappedVariants,
-    RsIDs,
+    mappedHuntingtonsVariants$nvs,
+    mappedHuntingtonsVariants$rsids,
     totalCaseSamples = 8
   )
   testthat::expect_s3_class(results, "data.frame")
@@ -62,7 +62,7 @@ testthat::test_that("case control with ensembl database as control results not c
 
 testthat::test_that("case control with phenotype results not changed", {
   results <- PhenoGenRLib::varianceCCAnalysisPheno(
-    variants = HuntingtonsVariants,
+    variants = huntingtonsVariants,
     totalCaseSamples = 8,
     phenotypeName = "dummy_pheno"
   )
@@ -71,7 +71,7 @@ testthat::test_that("case control with phenotype results not changed", {
 })
 
 testthat::test_that("generation of positional heatmap results not changed", {
-  results <- PhenoGenRLib:::generatePositionHeatmap(variants = MappedVariants)
+  results <- PhenoGenRLib:::generatePositionHeatmap(variants = mappedHuntingtonsVariants$nvs)
   testthat::expect_s3_class(results, "data.frame")
   testthat::expect_snapshot(results)
 })

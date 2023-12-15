@@ -44,8 +44,8 @@ healthy individual (the control group), or the case study individual.
 \examples{
 
 results <- PhenoGenRLib::varianceCCAnalysisEnsembl(
-  mappedHuntingtonsVariants,
-  RsIDs,
+  mappedHuntingtonsVariants$nvs,
+  mappedHuntingtonsVariants$rsids,
   totalCaseSamples = 8
 )
 

@@ -31,10 +31,13 @@ between the the individual tables categorical variables by application of
 either Fisher's exact test or Chi-Square test.
 }
 \examples{
-testResults <- multipleAssociationTests(
-  mxns = list(data.frame(A = c(1, 2, 3), B = c(1, 2, 3), row.names = c("C", "D"))),
-  groupName = "First Group"
+
+results <- PhenoGenRLib::multipleAssociationTests(
+  list(
+    data.frame(C1 = c(1,2), C2 = c(4,28), row.names = c("R1", "R2")),
+    data.frame(C1 = c(4,2), C2 = c(4,28), row.names = c("R1", "R3"))
+  )
 )
-View(testResults)
+# Use View(testResults) to see results!
 
 }

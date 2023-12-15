@@ -9,7 +9,7 @@
 #' @param heatmap The data frame containing the variant distribution of the
 #' various nucleotides at each positions.
 #'
-#' @param nucbase The nucleotides to graph. Can be any combination of
+#' @param nucbases The nucleotides to graph. Can be any combination of
 #' "A", "T", "C", or "G".
 #'
 #' @examples
