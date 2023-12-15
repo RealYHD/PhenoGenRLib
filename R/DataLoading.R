@@ -33,11 +33,12 @@
 #' @export
 #' @importFrom readr read_csv
 #' @importFrom bedr read.vcf
+#' @importFrom stringr str_trim
 linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progress = NULL) {
   if (is.data.frame(metadata)) {
     # Nothing
   } else if (is.character(metadata)) {
-    metadata <- readr::read_csv(metadataFile)
+    metadata <- readr::read_csv(metadata)
   } else {
     base::stop("Metadata must be either data frame or path to CSV.")
   }
@@ -75,6 +76,14 @@ linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progre
       }
     }
   }
+  variantData["local_id"] <- apply(
+    variantData[c("REF", "POS")],
+    MARGIN = 1,
+    FUN = function (data) {
+      ref <- data[["REF"]]
+      pos <- data[["POS"]]
+      return(paste(stringr::str_trim(ref), stringr::str_trim(pos), sep = ""))
+  })
   return(variantData)
 }
 
@@ -99,6 +108,9 @@ linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progre
 #' and 37 (GRCh37). Default is 38.
 #' @param batchSize The number coordinates to send to Ensembl servers at once. Smaller batches
 #' may reduce chances of timing out. Default is 100.
+#' @param progress A function to call each iteration to track progress. The
+#' function should accept two numeric parameters, one representing the current
+#' iteration, and the second representing the total number of iterations.
 #'
 #' @return Returns variant data.frame containing all pre-existing information (including metadata and
 #' other built-in VCF annotations), as well as the associated rsIDs, chromosomal and known chromosomal
@@ -115,7 +127,7 @@ linkVariantsWithMetadata <- function(metadata, vcfColName, vcfDir = NULL, progre
 #' View(mappedVariants)
 #' @export
 #'
-mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100) {
+mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion = 38, batchSize = 100, progress = NULL) {
   nvCoords <- coordinatesFromVariants(
     variants = variants,
     chromCol = chromCol,
@@ -128,6 +140,11 @@ mapRsidsForVariants <- function(chromCol, variants, offset = 0, hostGenVersion =
   batchIndex <- 1
   rsids <- NULL
   while(batchIndex <= base::nrow(nvCoords)) {
+    if (is.null(progress)) {
+      # Do nothing
+    } else {
+      progress(batchIndex, nrow(nvCoords))
+    }
     endIndex <- base::min(batchIndex + batchSize - 1, base::nrow(nvCoords))
     nvCoordBatch <- nvCoords[batchIndex:endIndex,]
     rsidBatch <- mapRsidsForVariantPositions(coordinates = nvCoordBatch, hostGenVersion = hostGenVersion)

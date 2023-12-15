@@ -28,7 +28,7 @@ ui <- fluidPage(
       shiny::textInput(
         inputId = "variantsMetadataVCFCol",
         label = "VCF Filename Column",
-        value = "vcf"
+        value = "vcfs"
       ),
       shiny::fileInput(
         inputId = "variants",
@@ -44,6 +44,28 @@ ui <- fluidPage(
         choices = c("A", "T", "C", "G"),
         selected = c("A", "T", "C", "G"),
         inline = TRUE
+      ),
+      shiny::textInput(
+        inputId = "chromCol",
+        label = "Chromosome Column Name",
+        value = "chromosome"
+      ),
+      shiny::numericInput(
+        inputId = "posOffset",
+        label = "The Offset of the Position",
+        value = 0
+      ),
+      shiny::numericInput(
+        inputId = "hgVersion",
+        label = "Human Genome Version",
+        value = 38,
+        min = 37,
+        max = 38
+      ),
+      shiny::checkboxInput(
+        inputId = "ccWithEnsembl",
+        label = "Case-control variants with Ensembl Data",
+        value = FALSE
       )
     ),
 
@@ -52,6 +74,7 @@ ui <- fluidPage(
       DT::dataTableOutput(outputId = "metadataTable"),
       DT::dataTableOutput(outputId = "variantsTable"),
       shiny::plotOutput(outputId = "variancePlot"),
+      DT::dataTableOutput(outputId = "associationTable")
     )
   )
 )
@@ -98,7 +121,26 @@ server <- function(input, output) {
       )
       return(variants)
     })
+  })
 
+  mappedVariants <- shiny::reactive({
+    shiny::req(variants)
+    shiny::req(input$chromCol)
+    shiny::req(input$posOffset)
+    shiny::req(input$hgVersion)
+
+    shiny::withProgress(message = "Mapping RSIDs", {
+      mappedVariants <- PhenoGenRLib::mapRsidsForVariants(
+        chromCol = input$chromCol,
+        variants = variants(),
+        offset = input$posOffset,
+        hostGenVersion = input$hgVersion,
+        progress = function(it, total) {
+          shiny::setProgress(value = it/total)
+        }
+      )
+      return(mappedVariants)
+    })
   })
 
   heatmap <- shiny::reactive({
@@ -109,6 +151,23 @@ server <- function(input, output) {
     return(heatmap)
   })
 
+  ensemblAssociationTable <- shiny::reactive({
+    shiny::req(mappedVariants)
+    shiny::req(input$ccWithEnsembl)
+
+    shiny::withProgress(message = "Calculating Association P-Values", {
+      ensemblAssocTable <- PhenoGenRLib::varianceCCAnalysisEnsembl(
+        mappedVariants()$nvs,
+        mappedVariants()$rsids,
+        base::nrow(metadata()),
+        progress = function(it, total) {
+          shiny::setProgress(value = it/total)
+        }
+      )
+      return(ensemblAssocTable)
+    })
+  })
+
   output$metadataTable <- DT::renderDataTable({
     shiny::req(metadata)
     return(metadata())
@@ -116,7 +175,14 @@ server <- function(input, output) {
 
   output$variantsTable <- DT::renderDataTable({
     shiny::req(variants)
-    return(variants()[c("CHROM", "POS", "REF", "ALT")])
+    return(mappedVariants()$nvs[c(
+      "CHROM",
+      "POS",
+      "REF",
+      "ALT",
+      "local_id",
+      "refsnp_id"
+    )])
   })
 
   output$variancePlot <- shiny::renderPlot({
@@ -127,6 +193,11 @@ server <- function(input, output) {
       nucbases = input$nucleoBases
     )
     return(plot)
+  })
+
+  output$associationTable <- DT::renderDataTable({
+    shiny::req(ensemblAssociationTable)
+    return(ensemblAssociationTable())
   })
 
 }

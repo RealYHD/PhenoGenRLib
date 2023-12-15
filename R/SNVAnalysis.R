@@ -102,7 +102,7 @@ varianceCCAnalysisPheno <- function(variants, totalCaseSamples, phenotypeName, u
 #'
 #' @importFrom dplyr distinct
 #' @importFrom stringr str_split
-varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE) {
+varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi = FALSE, progress = NULL) {
   if (!base::is.data.frame(variants)) {
     base::stop("Variants should be a data frame.")
   }
@@ -124,7 +124,14 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
   )
   results <- data.frame(matrix(ncol = 5, nrow = 0))
 
+  rsidsDone <- 0
   for (rsid in uniqueRsids) { # for every unique variant
+    if (is.null(progress)) {
+      # do nothing
+    } else {
+      progress(rsidsDone, length(uniqueRsids))
+    }
+
     specificVariants <- variants[which(variants["refsnp_id"]==rsid),] # get all same variants
     refAllele <- specificVariants[[1, "REF"]] # Fetch the reference allele for the set of variants
     controlAlleles <- unlist(stringr::str_split(rsidsWithFreq[rsidsWithFreq$refsnp_id==rsid,]$allele, "/"))
@@ -167,6 +174,8 @@ varianceCCAnalysisEnsembl <- function(variants, rsids, totalCaseSamples, useChi 
       groupName = rsid
     )
     results <- base::rbind(results, result, stringsAsFactors = FALSE)
+
+    rsidsDone <- rsidsDone + 1 # Solely for progress tracking.
   }
   return(results)
 }
